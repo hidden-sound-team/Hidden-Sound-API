@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using HiddenSound.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HiddenSound.API.Controllers
@@ -6,11 +7,13 @@ namespace HiddenSound.API.Controllers
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
+        public IValuesRepository ValuesRepository { get; set; }
+
         // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            return ValuesRepository.GetValues();
         }
 
         // GET api/values/5
