@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using HiddenSound.API.Messaging;
 using HiddenSound.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,8 @@ namespace HiddenSound.API.Controllers
     {
         public IValuesRepository ValuesRepository { get; set; }
 
+        public IEmailService EmailService { get; set; }
+
         // GET api/values
         [HttpGet]
         public IEnumerable<string> Get()
@@ -17,10 +20,12 @@ namespace HiddenSound.API.Controllers
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("{email}")]
+        public string Get(string email)
         {
-            return "value";
+            EmailService.SendEmail(email);
+
+            return $"Email Sent to {email}!";
         }
 
         // POST api/values

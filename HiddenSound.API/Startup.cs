@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using HiddenSound.API.Configuration;
 using HiddenSound.API.Controllers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace HiddenSound.API
 {
@@ -24,6 +26,7 @@ namespace HiddenSound.API
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
+
             Configuration = builder.Build();
         }
 
@@ -33,9 +36,11 @@ namespace HiddenSound.API
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
-        {   
-            // Add framework services.
+        {
+            services.AddOptions();
             services.AddMvc();
+
+            services.Configure<SendGridConfig>(Configuration.GetSection("ThirdParty:SendGrid"));
 
             services.Replace(ServiceDescriptor.Transient<IControllerActivator, ServiceBasedControllerActivator>());
 
@@ -51,7 +56,7 @@ namespace HiddenSound.API
             builder.RegisterType<ApplicationPartManager>().AsSelf().SingleInstance(); // not sure if actually needed any more
             builder.RegisterTypes(feature.Controllers.Select(ti => ti.AsType()).ToArray()).PropertiesAutowired();
 
-            builder.RegisterModule(new AutofacModule());
+            builder.RegisterModule(new Module());
 
             builder.Populate(services);
 
@@ -65,6 +70,11 @@ namespace HiddenSound.API
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
 
             app.UseMvc();
 
