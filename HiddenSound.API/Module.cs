@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Autofac;
 using Autofac.Core;
+using HiddenSound.API.Areas.API.Services;
 using HiddenSound.API.Repositories;
 using Microsoft.DotNet.InternalAbstractions;
 using Microsoft.Extensions.DependencyModel;
@@ -16,6 +17,8 @@ namespace HiddenSound.API
         {
             builder.RegisterType<ValuesRepository>().As<IValuesRepository>().PropertiesAutowired();
             builder.RegisterType<APIKeyRepository>().As<IAPIKeyRepository>().PropertiesAutowired();
+
+            builder.RegisterType<QRService>().As<IQRService>().PropertiesAutowired();
 
             var runtimeId = RuntimeEnvironment.GetRuntimeIdentifier();
             var assemblies = DependencyContext.Default.GetRuntimeAssemblyNames(runtimeId).Where(l => l.Name.StartsWith($"{GetType().Namespace}."));

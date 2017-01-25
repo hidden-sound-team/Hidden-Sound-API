@@ -15,8 +15,25 @@ namespace HiddenSound.API.Controllers
 
         public IAPIKeyRepository ApiKeyRepository { get; set; }
 
+        [HttpPost]
+        [Route("[action]")]
+        public JsonResult SendEmail(string email)
+        {
+            EmailService.SendEmail(email);
+
+            return Json("Email Sent!");
+        }
+
         [HttpGet]
-        public IEnumerable<APIKey> Index()
+        [Route("[action]/{userId}")]
+        public JsonResult MyTest(string userId, string someOtherId)
+        {
+            return Json($"{userId} - {someOtherId}");
+        }
+
+        [HttpGet]
+        [Route("[action]")]
+        public IEnumerable<APIKey> GetApiKeys(string userId)
         {
             return ApiKeyRepository.GetAPIKeys();
         }

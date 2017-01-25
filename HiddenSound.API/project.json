@@ -21,7 +21,9 @@
     "HiddenSound.API.Messaging": "1.0.0-*",
     "HiddenSound.API.Configuration": "1.0.0-*",
     "Microsoft.AspNetCore.Diagnostics": "1.0.1",
-    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.1"
+    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.1",
+    "Microsoft.AspNetCore.Authentication": "1.0.1",
+    "QRCoder": "1.2.3"
   },
 
   "tools": {
@@ -31,8 +33,7 @@
   "frameworks": {
     "netcoreapp1.0": {
       "imports": [
-        "dotnet5.6",
-        "portable-net45+win8"
+        "portable-net45"
       ]
     }
   },

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using HiddenSound.API.Auth;
 using HiddenSound.API.Configuration;
 using HiddenSound.API.Controllers;
 using HiddenSound.API.Filters;
@@ -43,6 +44,7 @@ namespace HiddenSound.API
             var connectionString = Configuration.GetConnectionString("HiddenSoundDatabase");
             services.AddDbContext<HiddenSoundDbContext>(options => options.UseSqlServer(connectionString));
 
+            services.AddMemoryCache();
             services.AddOptions();
             services.AddMvc(options =>
             {
@@ -68,9 +70,8 @@ namespace HiddenSound.API
             builder.RegisterModule<Module>();
 
             builder.Populate(services);
-
+            
             ApplicationContainer = builder.Build();
-
 
             return ApplicationContainer.Resolve<IServiceProvider>();
         }
@@ -86,6 +87,11 @@ namespace HiddenSound.API
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            //app.UseHmacSha256Authentication(options =>
+            //{
+            //    options.AutomaticAuthenticate = true;
+            //});
 
             app.UseMvc(routes =>
             {

@@ -39,6 +39,7 @@ namespace HiddenSound.API.Filters
                         var publicKey = apiKeySplit[0];
                         var privateKeyHash = apiKeySplit[1];
 
+
                     }
                 }
 
