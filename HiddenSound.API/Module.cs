@@ -15,6 +15,7 @@ namespace HiddenSound.API
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<ValuesRepository>().As<IValuesRepository>().PropertiesAutowired();
+            builder.RegisterType<APIKeyRepository>().As<IAPIKeyRepository>().PropertiesAutowired();
 
             var runtimeId = RuntimeEnvironment.GetRuntimeIdentifier();
             var assemblies = DependencyContext.Default.GetRuntimeAssemblyNames(runtimeId).Where(l => l.Name.StartsWith($"{GetType().Namespace}."));

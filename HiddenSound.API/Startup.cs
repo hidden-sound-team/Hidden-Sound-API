@@ -5,8 +5,10 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using HiddenSound.API.Configuration;
 using HiddenSound.API.Controllers;
+using HiddenSound.API.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
 
 namespace HiddenSound.API
 {
@@ -37,8 +40,14 @@ namespace HiddenSound.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            var connectionString = Configuration.GetConnectionString("HiddenSoundDatabase");
+            services.AddDbContext<HiddenSoundDbContext>(options => options.UseSqlServer(connectionString));
+
             services.AddOptions();
-            services.AddMvc();
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new TypeFilterAttribute(typeof(GlobalAuthenticationFilter)));
+            });
 
             services.Configure<SendGridConfig>(Configuration.GetSection("ThirdParty:SendGrid"));
 
@@ -56,11 +65,13 @@ namespace HiddenSound.API
             builder.RegisterType<ApplicationPartManager>().AsSelf().SingleInstance(); // not sure if actually needed any more
             builder.RegisterTypes(feature.Controllers.Select(ti => ti.AsType()).ToArray()).PropertiesAutowired();
 
-            builder.RegisterModule(new Module());
+            builder.RegisterModule<Module>();
 
             builder.Populate(services);
 
             ApplicationContainer = builder.Build();
+
+
             return ApplicationContainer.Resolve<IServiceProvider>();
         }
 
@@ -76,7 +87,14 @@ namespace HiddenSound.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute("areaRoute", "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
 
             appLifetime.ApplicationStopped.Register(() => ApplicationContainer.Dispose());
         }
