@@ -1,4 +1,5 @@
 ﻿using HiddenSound.API.Areas.Application.Models;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,6 +7,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
 {
     [Area("Application")]
     [Route("Application/[controller]")]
+    [EnableCors("Application")]
     public class AuthController : Controller
     {
         public IHttpContextAccessor HttpContextAccessor { get; set; }

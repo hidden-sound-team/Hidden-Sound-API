@@ -46,6 +46,14 @@ namespace HiddenSound.API
 
             services.AddMemoryCache();
             services.AddOptions();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("Application", 
+                    b => b.AllowAnyOrigin()
+                            .AllowAnyMethod());
+            });
+
             services.AddMvc(options =>
             {
                 options.Filters.Add(new TypeFilterAttribute(typeof(GlobalAuthenticationFilter)));
