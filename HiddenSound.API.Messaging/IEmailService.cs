@@ -7,6 +7,6 @@ namespace HiddenSound.API.Messaging
 {
     public interface IEmailService
     {
-        void SendEmail(string emailAddress);
+        void SendEmail(string emailAddress, string subject, string text);
     }
 }

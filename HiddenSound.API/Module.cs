@@ -15,6 +15,8 @@ namespace HiddenSound.API
     {
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterModule<Areas.Application.Module>();
+
             builder.RegisterType<ValuesRepository>().As<IValuesRepository>().PropertiesAutowired();
             builder.RegisterType<APIKeyRepository>().As<IAPIKeyRepository>().PropertiesAutowired();
 

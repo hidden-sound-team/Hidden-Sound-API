@@ -19,8 +19,6 @@ namespace HiddenSound.API.Controllers
         [Route("[action]")]
         public JsonResult SendEmail(string email)
         {
-            EmailService.SendEmail(email);
-
             return Json("Email Sent!");
         }
 

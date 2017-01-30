@@ -23,7 +23,8 @@
     "Microsoft.AspNetCore.Diagnostics": "1.0.1",
     "Microsoft.EntityFrameworkCore.SqlServer": "1.0.1",
     "Microsoft.AspNetCore.Authentication": "1.0.1",
-    "QRCoder": "1.2.3"
+    "QRCoder": "1.2.3",
+    "CryptoHelper": "2.1.0"
   },
 
   "tools": {
