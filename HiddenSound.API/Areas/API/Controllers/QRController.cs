@@ -15,7 +15,7 @@ namespace HiddenSound.API.Areas.API.Controllers
     {
         [HttpGet]
         [Route("[action]")]
-        public JsonResult Generate(string text)
+        public JsonResult Generate([FromQuery] string text)
         {
             return new JsonResult("test");
         }

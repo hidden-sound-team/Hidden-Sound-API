@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace HiddenSound.API
 {
@@ -57,6 +58,11 @@ namespace HiddenSound.API
             services.AddMvc(options =>
             {
                 options.Filters.Add(new TypeFilterAttribute(typeof(GlobalAuthenticationFilter)));
+            });
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
             });
 
             services.Configure<SendGridConfig>(Configuration.GetSection("ThirdParty:SendGrid"));
@@ -108,6 +114,13 @@ namespace HiddenSound.API
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+            });
+
+            app.UseSwagger();
+
+            app.UseSwaggerUi(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
             appLifetime.ApplicationStopped.Register(() => ApplicationContainer.Dispose());

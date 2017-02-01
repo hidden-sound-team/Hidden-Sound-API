@@ -18,7 +18,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
 
         [HttpPost]
         [Route("[action]")]
-        public ActionResult Login(LoginRequest request)
+        public ActionResult Login([FromBody] LoginRequest request)
         {
             var user = UserRepository.GetUser(request.Email, request.Password);
 
@@ -33,7 +33,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
 
         [HttpPost]
         [Route("[action]")]
-        public ActionResult Register(RegisterRequest request)
+        public ActionResult Register([FromBody] RegisterRequest request)
         {
             if (!ModelState.IsValid)
             {

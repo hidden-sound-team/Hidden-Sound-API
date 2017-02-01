@@ -17,21 +17,21 @@ namespace HiddenSound.API.Controllers
 
         [HttpPost]
         [Route("[action]")]
-        public JsonResult SendEmail(string email)
+        public JsonResult SendEmail([FromQuery] string email)
         {
             return Json("Email Sent!");
         }
 
         [HttpGet]
         [Route("[action]/{userId}")]
-        public JsonResult MyTest(string userId, string someOtherId)
+        public JsonResult MyTest([FromQuery] string userId, [FromQuery] string someOtherId)
         {
             return Json($"{userId} - {someOtherId}");
         }
 
         [HttpGet]
         [Route("[action]")]
-        public IEnumerable<APIKey> GetApiKeys(string userId)
+        public IEnumerable<APIKey> GetApiKeys([FromQuery] string userId)
         {
             return ApiKeyRepository.GetAPIKeys();
         }
