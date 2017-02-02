@@ -7,6 +7,7 @@ using HiddenSound.API.Auth;
 using HiddenSound.API.Configuration;
 using HiddenSound.API.Controllers;
 using HiddenSound.API.Filters;
+using HiddenSound.API.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -63,6 +64,8 @@ namespace HiddenSound.API
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+
+                c.OperationFilter<ReplaceTagOperationFilter>();
             });
 
             services.Configure<SendGridConfig>(Configuration.GetSection("ThirdParty:SendGrid"));
