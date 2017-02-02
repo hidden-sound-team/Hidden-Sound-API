@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace HiddenSound.API.Areas.Shared.Models
 {
@@ -15,6 +16,7 @@ namespace HiddenSound.API.Areas.Shared.Models
         [Column("Email")]
         public string Email { get; set; }
 
+        [JsonIgnore]
         [Column("Password_Hash")]
         public string Password { get; set; }
 
@@ -24,6 +26,7 @@ namespace HiddenSound.API.Areas.Shared.Models
         [Column("Is_Verified")]
         public bool IsVerified { get; set; }
 
+        [JsonIgnore]
         public EmailVerification EmailVerification { get; set; }
     }
 }
