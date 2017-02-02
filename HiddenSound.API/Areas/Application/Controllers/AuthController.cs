@@ -18,6 +18,8 @@ namespace HiddenSound.API.Areas.Application.Controllers
 
         [HttpPost]
         [Route("[action]")]
+        [ProducesResponseType(typeof(User), 200)]
+        [ProducesResponseType(typeof(User), 401)]
         public ActionResult Login([FromBody] LoginRequest request)
         {
             var user = UserRepository.GetUser(request.Email, request.Password);
@@ -27,7 +29,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
                 return Unauthorized();
             }
 
-            return Ok();
+            return Ok(user);
         }
 
 

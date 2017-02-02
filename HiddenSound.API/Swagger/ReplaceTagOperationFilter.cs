@@ -21,6 +21,20 @@ namespace HiddenSound.API.Swagger
             {
                 operation.Tags[0] = attribute.RouteValue;
             }
+
+            operation.Consumes.Clear();
+            operation.Consumes.Add("application/json");
+
+            operation.Produces.Clear();
+            operation.Produces.Add("application/json");
+
+            foreach (var response in operation.Responses)
+            {
+                if (response.Key == "401")
+                {
+                    response.Value.Schema = null;
+                }
+            }
         }
     }
 }

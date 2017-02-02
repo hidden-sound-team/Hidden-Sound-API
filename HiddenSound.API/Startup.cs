@@ -63,7 +63,7 @@ namespace HiddenSound.API
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+                c.SwaggerDoc("v1", new Info { Title = "HiddenSound API", Version = "v1" });
 
                 c.OperationFilter<ReplaceTagOperationFilter>();
             });
@@ -146,7 +146,8 @@ namespace HiddenSound.API
 
             app.UseSwaggerUi(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "HiddenSound v1");
+                c.DocExpansion("none");
             });
 
             appLifetime.ApplicationStopped.Register(() => ApplicationContainer.Dispose());
