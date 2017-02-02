@@ -94,13 +94,36 @@ namespace HiddenSound.API
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
             IApplicationLifetime appLifetime)
         {
+            var sslPort = 0;
+
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                var builder = new ConfigurationBuilder()
+                    .SetBasePath(env.ContentRootPath)
+                    .AddJsonFile(@"Properties/launchSettings.json", optional: false, reloadOnChange: true);
+
+                var launchConfig = builder.Build();
+                sslPort = launchConfig.GetValue<int>("iisSettings:iisExpress:sslPort");
             }
+
+            app.Use(async (ctx, next) =>
+            {
+                if (ctx.Request.IsHttps)
+                {
+                    await next();
+                }
+                else
+                {
+                    var sslPortStr = sslPort == 0 || sslPort == 443 ? string.Empty : $":{sslPort}";
+                    var httpsUrl = $"https://{ctx.Request.Host.Host}{sslPortStr}{ctx.Request.Path}";
+                    ctx.Response.Redirect(httpsUrl);
+                }
+            });
 
             //app.UseHmacSha256Authentication(options =>
             //{
