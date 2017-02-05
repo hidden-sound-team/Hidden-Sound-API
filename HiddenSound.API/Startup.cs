@@ -54,6 +54,10 @@ namespace HiddenSound.API
                 options.AddPolicy("Application", 
                     b => b.AllowAnyOrigin()
                             .AllowAnyMethod());
+
+                options.AddPolicy("API",
+                    b => b.AllowAnyOrigin()
+                            .AllowAnyMethod());
             });
 
             services.AddMvc(options =>
@@ -132,6 +136,8 @@ namespace HiddenSound.API
             //{
             //    options.AutomaticAuthenticate = true;
             //});
+
+           
 
             app.UseMvc(routes =>
             {

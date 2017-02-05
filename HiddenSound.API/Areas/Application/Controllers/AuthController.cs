@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HiddenSound.API.Areas.Application.Controllers
 {
+    [Area("Application")]
     [Route("Application/[controller]")]
     public class AuthController : ApplicationController
     {

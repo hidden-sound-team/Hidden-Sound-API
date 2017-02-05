@@ -14,6 +14,8 @@ namespace HiddenSound.API
 
         public virtual DbSet<User> Users { get; set; }
 
+        public virtual DbSet<Transaction> Transactions { get; set; }
+
         public HiddenSoundDbContext(DbContextOptions<HiddenSoundDbContext> options) : base(options)
         {
             
@@ -40,6 +42,17 @@ namespace HiddenSound.API
             modelBuilder.Entity<EmailVerification>(entity =>
             {
                 
+            });
+
+            modelBuilder.Entity<Transaction>(entity =>
+            {
+                entity.Property(e => e.ID).UseSqlServerIdentityColumn().IsRequired();
+                entity.Property(e => e.AuthorizationCode).IsRequired();
+                entity.Property(e => e.Status).IsRequired();
+                entity.Property(e => e.Base64QR).IsRequired();
+                entity.Property(e => e.UserID).IsRequired();
+                entity.Property(e => e.VendorID).IsRequired();
+                entity.Property(e => e.ExpiresOn).IsRequired();
             });
         }
     }

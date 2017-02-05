@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -12,7 +10,6 @@ namespace HiddenSound.API.Swagger
     {
         public void Apply(Operation operation, OperationFilterContext context)
         {
-
             var attribute = context.ApiDescription
                 .ControllerAttributes()
                 .OfType<AreaAttribute>().FirstOrDefault();
@@ -30,7 +27,7 @@ namespace HiddenSound.API.Swagger
 
             foreach (var response in operation.Responses)
             {
-                if (response.Key == "401")
+                if (response.Key == "401" || response.Key == "404")
                 {
                     response.Value.Schema = null;
                 }
