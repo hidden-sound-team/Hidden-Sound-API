@@ -46,13 +46,7 @@ namespace HiddenSound.API
 
             modelBuilder.Entity<Transaction>(entity =>
             {
-                entity.Property(e => e.ID).UseSqlServerIdentityColumn().IsRequired();
-                entity.Property(e => e.AuthorizationCode).IsRequired();
-                entity.Property(e => e.Status).IsRequired();
-                entity.Property(e => e.Base64QR).IsRequired();
-                entity.Property(e => e.UserID).IsRequired();
-                entity.Property(e => e.VendorID).IsRequired();
-                entity.Property(e => e.ExpiresOn).IsRequired();
+                entity.Property(e => e.ID).UseSqlServerIdentityColumn();
             });
         }
     }

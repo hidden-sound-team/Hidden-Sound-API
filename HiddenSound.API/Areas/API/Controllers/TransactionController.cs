@@ -40,7 +40,7 @@ namespace HiddenSound.API.Areas.API.Controllers
             var authorizationCode = Convert.ToBase64String(salt);
             var qrCode = QRService.Create(authorizationCode);
 
-            var authorization = new Transaction
+            var transaction = new Transaction
             {
                 AuthorizationCode = authorizationCode,
                 Base64QR = qrCode,
@@ -50,7 +50,7 @@ namespace HiddenSound.API.Areas.API.Controllers
                 VendorID = 0
             };
 
-            TransactionRepository.CreateTransaction(authorization);
+            TransactionRepository.CreateTransaction(transaction);
 
             var response = new TransactionCreateResponse
             {
@@ -66,23 +66,23 @@ namespace HiddenSound.API.Areas.API.Controllers
         [ProducesResponseType(typeof(TransactionStatusResponse), 404)]
         public ActionResult Status([FromQuery] string authorizationCode)
         {
-            var authorization = TransactionRepository.GetTransaction(authorizationCode);
+            var transaction = TransactionRepository.GetTransaction(authorizationCode);
 
-            if (authorization == null)
+            if (transaction == null)
             {
                 return NotFound();
             }
 
             // we won't do any updating here. expired date is already stored
             // and we can use batch sql update job to remove expired authorizations
-            if (DateTime.UtcNow >= authorization.ExpiresOn)
+            if (DateTime.UtcNow >= transaction.ExpiresOn)
             {
-                authorization.Status = TransactionStatus.Expired;
+                transaction.Status = TransactionStatus.Expired;
             }
 
             var response = new TransactionStatusResponse
             {
-                Status = authorization.Status
+                Status = transaction.Status
             };
             return Ok(response);
         }
@@ -93,14 +93,16 @@ namespace HiddenSound.API.Areas.API.Controllers
         [ProducesResponseType(typeof(TransactionStatusResponse), 404)]
         public ActionResult Info([FromQuery] string authorizationCode)
         {
-            var authorization = TransactionRepository.GetTransaction(authorizationCode);
+            var transaction = TransactionRepository.GetTransaction(authorizationCode);
 
-            if (authorization == null)
+            if (transaction == null)
             {
                 return NotFound();
             }
 
-            return Json(authorization);
+            transaction.Base64QR = QRService.Create(transaction.AuthorizationCode);
+
+            return Json(transaction);
         }
     }
 }
