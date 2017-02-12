@@ -2,6 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using HiddenSound.API.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 
 namespace HiddenSound.API.Areas.Shared.Models
@@ -10,11 +12,14 @@ namespace HiddenSound.API.Areas.Shared.Models
     public class Transaction
     {
         [Column("ID")]
-        [Key, Required]
+        [Key]
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
         [Column("Authorization_Code")]
-        [Required, MaxLength(50)]
+        [Required]
+        [MaxLength(50)]
         public string AuthorizationCode { get; set; }
 
         [Column("Status")]
@@ -22,12 +27,12 @@ namespace HiddenSound.API.Areas.Shared.Models
         public TransactionStatus Status { get; set; }
 
         [Column("User_ID")]
-        [Required]
-        public int UserID { get; set; }
+        [ForeignKey("User")]
+        public int? UserID { get; set; }
 
         [Column("Vendor_ID")]
-        [Required]
-        public int VendorID { get; set; }
+        [ForeignKey("Vendor")]
+        public int? VendorID { get; set; }
 
         [Column("Expires_On")]
         [Required]
@@ -37,9 +42,9 @@ namespace HiddenSound.API.Areas.Shared.Models
         public string Base64QR { get; set; }
 
         [JsonIgnore]
-        public User User { get; set; }
+        public HiddenSoundUser User { get; set; }
 
         [JsonIgnore]
-        public User Vendor { get; set; }
+        public HiddenSoundUser Vendor { get; set; }
     }
 }

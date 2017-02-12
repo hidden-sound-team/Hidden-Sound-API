@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
-using HiddenSound.API.Areas.Application.Repositories;
 
 namespace HiddenSound.API.Areas.Application
 {
@@ -11,7 +10,7 @@ namespace HiddenSound.API.Areas.Application
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<UserRepository>().As<IUserRepository>().PropertiesAutowired();
+
         }
     }
 }

@@ -12,6 +12,7 @@ using OpenIddict.Core;
 namespace HiddenSound.API.Areas.OAuth.Controllers
 {
     [Route(OAuthConstants.ControllerRoute)]
+    [Area("OAuth")]
     public class UserInfoController : Controller
     {
         public UserManager<HiddenSoundUser> UserManager { get; set; }

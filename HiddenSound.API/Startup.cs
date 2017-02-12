@@ -5,10 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using HiddenSound.API.Auth;
 using HiddenSound.API.Configuration;
-using HiddenSound.API.Controllers;
-using HiddenSound.API.Filters;
 using HiddenSound.API.Identity;
 using HiddenSound.API.Swagger;
 using Microsoft.AspNetCore.Builder;
@@ -93,7 +90,7 @@ namespace HiddenSound.API
 
             services.AddMvc(options =>
             {
-                options.Filters.Add(new TypeFilterAttribute(typeof(GlobalAuthenticationFilter)));
+
             });
 
             services.AddSwaggerGen(c =>
@@ -109,7 +106,7 @@ namespace HiddenSound.API
             var builder = new ContainerBuilder();
             var manager = new ApplicationPartManager();
 
-            manager.ApplicationParts.Add(new AssemblyPart(typeof(ValuesController).GetTypeInfo().Assembly));
+            manager.ApplicationParts.Add(new AssemblyPart(typeof(Startup).GetTypeInfo().Assembly));
             manager.FeatureProviders.Add(new ControllerFeatureProvider());
 
             var feature = new ControllerFeature();

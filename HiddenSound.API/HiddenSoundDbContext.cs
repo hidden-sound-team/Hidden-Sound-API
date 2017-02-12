@@ -12,11 +12,7 @@ namespace HiddenSound.API
 {
     public class HiddenSoundDbContext : IdentityDbContext<HiddenSoundUser, HiddenSoundRole, int>
     {
-        // public virtual DbSet<APIKey> APIKey { get; set; }
-
-        // public virtual DbSet<User> Users { get; set; }
-
-        // public virtual DbSet<Transaction> Transactions { get; set; }
+        public virtual DbSet<Transaction> Transactions { get; set; }
 
         public HiddenSoundDbContext(DbContextOptions<HiddenSoundDbContext> options) : base(options)
         {
@@ -81,31 +77,11 @@ namespace HiddenSound.API
                 entity.Property(e => e.UserId).HasColumnName("AspNetUserId");
 
             });
-            //modelBuilder.Entity<APIKey>(entity =>
-            //{
-            //    entity.Property(e => e.ID).UseSqlServerIdentityColumn().IsRequired();
-            //    entity.Property(e => e.PublicKey).IsRequired();
-            //    entity.Property(e => e.PrivateKey).IsRequired();
-            //});
 
-            //modelBuilder.Entity<User>(entity =>
-            //{
-            //    entity.Property(e => e.ID).UseSqlServerIdentityColumn().IsRequired();
-            //    entity.Property(e => e.Email).IsRequired();
-            //    entity.Property(e => e.Password).IsRequired();
-            //    entity.Property(e => e.IsVerified).IsRequired();
-            //    entity.Property(e => e.IsDeveloper).IsRequired();
-            //});
+            builder.Entity<Transaction>(entity =>
+            {
 
-            //modelBuilder.Entity<EmailVerification>(entity =>
-            //{
-
-            //});
-
-            //modelBuilder.Entity<Transaction>(entity =>
-            //{
-            //    entity.Property(e => e.ID).UseSqlServerIdentityColumn();
-            //});
+            });
         }
     }
 }

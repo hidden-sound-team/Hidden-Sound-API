@@ -19,6 +19,7 @@ using SignInResult = Microsoft.AspNetCore.Mvc.SignInResult;
 namespace HiddenSound.API.Areas.OAuth.Controllers
 {
     [Route(OAuthConstants.ControllerRoute)]
+    [Area("OAuth")]
     public class OAuthController : Controller
     {
         public OpenIddictApplicationManager<OpenIddictApplication<int>> ApplicationManager { get; set; }
