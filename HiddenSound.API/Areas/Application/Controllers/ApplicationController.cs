@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 namespace HiddenSound.API.Areas.Application.Controllers
 {
     [Area("Application")]
-    [EnableCors("Application")]
     public abstract class ApplicationController : Controller
     {
         protected ActionResult ModelStateError()

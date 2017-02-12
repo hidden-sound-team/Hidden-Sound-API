@@ -48,6 +48,8 @@ namespace HiddenSound.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            services.Configure<SendGridConfig>(Configuration.GetSection("ThirdParty:SendGrid"));
+
             var connectionString = Configuration.GetConnectionString("HiddenSoundDatabase");
             services.AddDbContext<HiddenSoundDbContext>(options =>
             {
@@ -61,19 +63,18 @@ namespace HiddenSound.API
 
             services.AddCors(options =>
             {
-                options.AddPolicy("Application", 
-                    b => b.AllowAnyOrigin()
-                            .AllowAnyMethod());
-
-                options.AddPolicy("API",
-                    b => b.AllowAnyOrigin()
-                            .AllowAnyMethod());
-
-                options.AddPolicy("OAuth",
-                    b => b.AllowAnyOrigin().AllowAnyMethod());
+                options.AddPolicy("AnyOrigin", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+                options.AddPolicy("Application", p => p.WithOrigins(Configuration["ApplicationUri"]).AllowAnyMethod().AllowAnyHeader());
             });
 
-            services.AddIdentity<HiddenSoundUser, HiddenSoundRole>()
+            services.AddIdentity<HiddenSoundUser, HiddenSoundRole>(options =>
+                {
+                    options.Password.RequireDigit = true;
+                    options.Password.RequireLowercase = true;
+                    options.Password.RequireNonAlphanumeric = true;
+                    options.Password.RequireUppercase = true;
+                    options.Password.RequiredLength = 6;
+                })
                 .AddEntityFrameworkStores<HiddenSoundDbContext, int>()
                 .AddDefaultTokenProviders();
 
@@ -83,7 +84,7 @@ namespace HiddenSound.API
                 .EnableAuthorizationEndpoint("/OAuth/Authorize")
                 .EnableTokenEndpoint($"/{OAuthConstants.ControllerRoute}/{OAuthConstants.TokenRoute}")
                 .EnableLogoutEndpoint("/OAuth/Logout")
-                .EnableUserinfoEndpoint($"/Api/{OAuthConstants.UserInfoRoute}")
+                .EnableUserinfoEndpoint($"/{OAuthConstants.ControllerRoute}/{OAuthConstants.UserInfoRoute}")
                 .AllowAuthorizationCodeFlow()
                 .AllowPasswordFlow()
                 .AllowRefreshTokenFlow()
@@ -102,7 +103,6 @@ namespace HiddenSound.API
                 c.OperationFilter<ReplaceTagOperationFilter>();
             });
 
-            services.Configure<SendGridConfig>(Configuration.GetSection("ThirdParty:SendGrid"));
 
             services.Replace(ServiceDescriptor.Transient<IControllerActivator, ServiceBasedControllerActivator>());
 
@@ -162,6 +162,16 @@ namespace HiddenSound.API
                 }
             });
 
+            app.UseWhen(ctx => ctx.Request.Path.StartsWithSegments("/Application"), branch =>
+            {
+                branch.UseCors("Application");
+            });
+
+            app.UseWhen(ctx => new[] { "/.well-known", "/Api", "/Mobile", "/OAuth" }.Any(p => ctx.Request.Path.StartsWithSegments(p)), branch =>
+           {
+               branch.UseCors("AnyOrigin");
+           });
+
             app.UseOAuthValidation();
 
             app.UseOpenIddict();
@@ -184,6 +194,7 @@ namespace HiddenSound.API
             });
 
             appLifetime.ApplicationStopped.Register(() => ApplicationContainer.Dispose());
+            InitializeAsync(app.ApplicationServices, CancellationToken.None).GetAwaiter().GetResult();
         }
 
         private async Task InitializeAsync(IServiceProvider services, CancellationToken cancellationToken)

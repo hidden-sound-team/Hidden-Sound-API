@@ -8,7 +8,6 @@ namespace HiddenSound.API.Areas.Mobile.Controllers
 {
     [Area("Mobile")]
     [Route("Mobile/[controller]")]
-    [EnableCors("Application")]
     public class TransactionController : Controller
     {
         [HttpPost]

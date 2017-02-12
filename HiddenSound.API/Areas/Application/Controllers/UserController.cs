@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HiddenSound.API.Areas.Application.Controllers
 {
+    [Area("Application")]
+    [Route("Application/[controller]")]
     public class UserController : ApplicationController
     {
         private SignInManager<HiddenSoundUser> SignInManager { get; set; }
@@ -18,7 +20,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         [Route("[action]")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest model, [FromQuery] string returnUrl = null)
         {

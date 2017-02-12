@@ -11,12 +11,12 @@ using OpenIddict.Core;
 
 namespace HiddenSound.API.Areas.OAuth.Controllers
 {
-    [EnableCors("API")]
-    [Route("Api")]
+    [Route(OAuthConstants.ControllerRoute)]
     public class UserInfoController : Controller
     {
         public UserManager<HiddenSoundUser> UserManager { get; set; }
 
+        
         [Authorize(ActiveAuthenticationSchemes = OAuthValidationDefaults.AuthenticationScheme)]
         [Route(OAuthConstants.UserInfoRoute)]
         [HttpGet]

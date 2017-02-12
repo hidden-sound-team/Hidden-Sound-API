@@ -14,10 +14,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Core;
 using OpenIddict.Models;
+using SignInResult = Microsoft.AspNetCore.Mvc.SignInResult;
 
 namespace HiddenSound.API.Areas.OAuth.Controllers
 {
-    [EnableCors("OAuth")]
     [Route(OAuthConstants.ControllerRoute)]
     public class OAuthController : Controller
     {
@@ -37,7 +37,9 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
 
         [HttpPost]
         [Route(OAuthConstants.TokenRoute)]
-        [Produces("application/json")]
+        [ProducesResponseType(typeof(SignInResult), 200)]
+        [ProducesResponseType(typeof(OpenIdConnectResponse), 400)]
+        [Consumes("application/x-www-form-urlencoded")]
         public async Task<IActionResult> Token([FromBody] OpenIdConnectRequest request)
         {
             if (request.IsPasswordGrantType())

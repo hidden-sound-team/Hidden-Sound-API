@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Swagger;
@@ -21,6 +22,7 @@ namespace HiddenSound.API.Swagger
 
             operation.Consumes.Clear();
             operation.Consumes.Add("application/json");
+            operation.Consumes.Add("application/x-www-form-urlencoded");
 
             operation.Produces.Clear();
             operation.Produces.Add("application/json");

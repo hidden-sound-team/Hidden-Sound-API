@@ -12,7 +12,6 @@ namespace HiddenSound.API.Areas.API.Controllers
 {
     [Area("API")]
     [Route("Api/[controller]")]
-    [EnableCors("API")]
     public class TransactionController : Controller
     {
         public IQRService QRService { get; set; }
