@@ -4,10 +4,10 @@
   "dependencies": {
     "Autofac.Extensions.DependencyInjection": "4.0.0",
     "HiddenSound.API.Configuration": "1.0.0-*",
-    "Microsoft.AspNetCore.Http": "1.0.1",
-    "Microsoft.Extensions.Configuration": "1.0.1",
-    "Microsoft.Extensions.Options": "1.0.1",
-    "NETStandard.Library": "1.6.0",
+    "Microsoft.AspNetCore.Http": "1.1.0",
+    "Microsoft.Extensions.Configuration": "1.1.0",
+    "Microsoft.Extensions.Options": "1.1.0",
+    "NETStandard.Library": "1.6.1",
     "SendGrid.NetCore": "1.0.0-rtm-00002"
   },
 

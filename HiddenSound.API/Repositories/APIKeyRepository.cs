@@ -12,9 +12,7 @@ namespace HiddenSound.API.Repositories
 
         public List<APIKey> GetAPIKeys()
         {
-            var keys = DbContext.APIKey.ToList();
-
-            return keys;
+            return new List<APIKey>();
         }
     }
 }

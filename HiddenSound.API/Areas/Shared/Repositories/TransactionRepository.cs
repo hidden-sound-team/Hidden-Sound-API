@@ -12,7 +12,8 @@ namespace HiddenSound.API.Areas.Shared.Repositories
 
         public Transaction GetTransaction(string authorizationCode)
         {
-            return DbContext.Transactions.FirstOrDefault(a => a.AuthorizationCode == authorizationCode);
+            return new Transaction();
+            //return DbContext.Transactions.FirstOrDefault(a => a.AuthorizationCode == authorizationCode);
         }
 
         public void UpdateTransaction(Transaction transaction)
@@ -22,13 +23,14 @@ namespace HiddenSound.API.Areas.Shared.Repositories
 
         public void CreateTransaction(Transaction transaction)
         {
-            DbContext.Transactions.Add(transaction);
-            DbContext.SaveChanges();
+            // DbContext.Transactions.Add(transaction);
+            // DbContext.SaveChanges();
         }
 
         public List<Transaction> GetAllTransactions()
         {
-            return DbContext.Transactions.ToList();
+            return new List<Transaction>();
+            //return DbContext.Transactions.ToList();
         }
     }
 }

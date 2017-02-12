@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using HiddenSound.API.Auth;
 using HiddenSound.API.Configuration;
 using HiddenSound.API.Controllers;
 using HiddenSound.API.Filters;
+using HiddenSound.API.Identity;
 using HiddenSound.API.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -19,6 +22,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
+using OpenIddict.Core;
+using OpenIddict.Models;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace HiddenSound.API
@@ -44,7 +49,12 @@ namespace HiddenSound.API
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             var connectionString = Configuration.GetConnectionString("HiddenSoundDatabase");
-            services.AddDbContext<HiddenSoundDbContext>(options => options.UseSqlServer(connectionString));
+            services.AddDbContext<HiddenSoundDbContext>(options =>
+            {
+                options.UseSqlServer(connectionString);
+
+                options.UseOpenIddict<int>();
+            });
 
             services.AddMemoryCache();
             services.AddOptions();
@@ -58,7 +68,27 @@ namespace HiddenSound.API
                 options.AddPolicy("API",
                     b => b.AllowAnyOrigin()
                             .AllowAnyMethod());
+
+                options.AddPolicy("OAuth",
+                    b => b.AllowAnyOrigin().AllowAnyMethod());
             });
+
+            services.AddIdentity<HiddenSoundUser, HiddenSoundRole>()
+                .AddEntityFrameworkStores<HiddenSoundDbContext, int>()
+                .AddDefaultTokenProviders();
+
+            services.AddOpenIddict<int>()
+                .AddEntityFrameworkCoreStores<HiddenSoundDbContext>()
+                .AddMvcBinders()
+                .EnableAuthorizationEndpoint("/OAuth/Authorize")
+                .EnableTokenEndpoint($"/{OAuthConstants.ControllerRoute}/{OAuthConstants.TokenRoute}")
+                .EnableLogoutEndpoint("/OAuth/Logout")
+                .EnableUserinfoEndpoint($"/Api/{OAuthConstants.UserInfoRoute}")
+                .AllowAuthorizationCodeFlow()
+                .AllowPasswordFlow()
+                .AllowRefreshTokenFlow()
+                .EnableRequestCaching()
+                .DisableHttpsRequirement();
 
             services.AddMvc(options =>
             {
@@ -132,12 +162,9 @@ namespace HiddenSound.API
                 }
             });
 
-            //app.UseHmacSha256Authentication(options =>
-            //{
-            //    options.AutomaticAuthenticate = true;
-            //});
+            app.UseOAuthValidation();
 
-           
+            app.UseOpenIddict();
 
             app.UseMvc(routes =>
             {
@@ -157,6 +184,42 @@ namespace HiddenSound.API
             });
 
             appLifetime.ApplicationStopped.Register(() => ApplicationContainer.Dispose());
+        }
+
+        private async Task InitializeAsync(IServiceProvider services, CancellationToken cancellationToken)
+        {
+            using (var scope = services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<HiddenSoundDbContext>();
+                await context.Database.EnsureCreatedAsync();
+
+                var manager = services.GetRequiredService<OpenIddictApplicationManager<OpenIddictApplication<int>>>();
+
+                if (await manager.FindByClientIdAsync("postman", cancellationToken) == null)
+                {
+                    var application = new OpenIddictApplication<int>
+                    {
+                        ClientId = "postman",
+                        DisplayName = "Postman",
+                        RedirectUri = "https://www.getpostman.com/oauth2/callback"
+                    };
+
+                    await manager.CreateAsync(application, cancellationToken);
+                }
+
+                if (await manager.FindByClientIdAsync("angular2", cancellationToken) == null)
+                {
+                    var application = new OpenIddictApplication<int>
+                    {
+                        ClientId = "angular2",
+                        DisplayName = "Angular2",
+                        RedirectUri = "http://localhost:52323",
+                        LogoutRedirectUri = "http://localhost:52323"
+                    };
+
+                    await manager.CreateAsync(application, cancellationToken);
+                }
+            }
         }
     }
 }

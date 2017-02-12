@@ -19,10 +19,12 @@ namespace HiddenSound.API.Areas.Application.Repositories
                 return null;
             }
 
-            var users = DbContext.Users.AsNoTracking()
-                .Where(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase)
-                            && Crypto.VerifyHashedPassword(u.Password, password))
-                .ToList();
+            //var users = DbContext.Users.AsNoTracking()
+            //    .Where(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase)
+            //                && Crypto.VerifyHashedPassword(u.Password, password))
+            //    .ToList();
+
+            var users = new List<User>();
 
             return RemoveSensitiveData(users.FirstOrDefault());
         }
@@ -34,9 +36,11 @@ namespace HiddenSound.API.Areas.Application.Repositories
                 return null;
             }
 
-            var user = DbContext.Users.AsNoTracking()
-                .Where(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            //var user = DbContext.Users.AsNoTracking()
+            //    .Where(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase))
+            //    .ToList();
+
+            var user = new List<User>();
 
             return RemoveSensitiveData(user.FirstOrDefault());
         }
@@ -48,17 +52,19 @@ namespace HiddenSound.API.Areas.Application.Repositories
                 throw new ArgumentException();
             }
 
-            DbContext.Users.Add(user);
-            DbContext.SaveChanges();
+            // DbContext.Users.Add(user);
+            // DbContext.SaveChanges();
 
             return RemoveSensitiveData(user);
         }
 
         public User GetUser(int id)
         {
-            var user = DbContext.Users
-                .Where(u => u.ID == id)
-                .ToList();
+            //var user = DbContext.Users
+            //    .Where(u => u.ID == id)
+            //    .ToList();
+
+            var user = new List<User>();
 
             return RemoveSensitiveData(user.FirstOrDefault());
         }

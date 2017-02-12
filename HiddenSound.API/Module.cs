@@ -7,7 +7,7 @@ using Autofac.Core;
 using HiddenSound.API.Areas.API.Services;
 using HiddenSound.API.Areas.Shared.Repositories;
 using HiddenSound.API.Repositories;
-using Microsoft.DotNet.InternalAbstractions;
+using Microsoft.DotNet.PlatformAbstractions;
 using Microsoft.Extensions.DependencyModel;
 
 namespace HiddenSound.API
