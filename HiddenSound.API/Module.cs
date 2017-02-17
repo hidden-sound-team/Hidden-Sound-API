@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Autofac;
 using Autofac.Core;
+using HiddenSound.API.Areas.Application.Services;
 using HiddenSound.API.Areas.API.Services;
 using HiddenSound.API.Areas.Shared.Repositories;
 using Microsoft.DotNet.PlatformAbstractions;
@@ -18,8 +19,8 @@ namespace HiddenSound.API
             builder.RegisterModule<Areas.Application.Module>();
 
             builder.RegisterType<TransactionRepository>().As<ITransactionRepository>().PropertiesAutowired();
-
             builder.RegisterType<QRService>().As<IQRService>().PropertiesAutowired();
+            builder.RegisterType<AuthEmailSender>().As<IEmailSender>().PropertiesAutowired();
 
             var runtimeId = RuntimeEnvironment.GetRuntimeIdentifier();
             var assemblies = DependencyContext.Default.GetRuntimeAssemblyNames(runtimeId).Where(l => l.Name.StartsWith($"{GetType().Namespace}."));

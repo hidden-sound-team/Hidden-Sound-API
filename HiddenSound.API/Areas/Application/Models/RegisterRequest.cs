@@ -21,6 +21,6 @@ namespace HiddenSound.API.Areas.Application.Models
         [Compare("Password")]
         public string ConfirmPassword { get; set; }
 
-        public int IsDeveloper { get; set; }
+        public bool IsDeveloper { get; set; }
     }
 }

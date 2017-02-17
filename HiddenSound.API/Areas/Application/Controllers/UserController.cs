@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HiddenSound.API.Areas.Application.Models;
+using HiddenSound.API.Areas.Application.Services;
+using HiddenSound.API.Configuration;
+using HiddenSound.API.Extensions;
 using HiddenSound.API.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace HiddenSound.API.Areas.Application.Controllers
 {
@@ -14,36 +18,48 @@ namespace HiddenSound.API.Areas.Application.Controllers
     [Route("Application/[controller]")]
     public class UserController : ApplicationController
     {
-        private SignInManager<HiddenSoundUser> SignInManager { get; set; }
+        public SignInManager<HiddenSoundUser> SignInManager { get; set; }
 
         public UserManager<HiddenSoundUser> UserManager { get; set; }
 
+        public IEmailSender EmailSender { get; set; }
+
+        public IOptions<AppSettingsConfig> AppSettings { get; set; }
+
         [HttpPost]
         [AllowAnonymous]
-        //[ValidateAntiForgeryToken]
         [Route("[action]")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest model, [FromQuery] string returnUrl = null)
+        public async Task<IActionResult> Register([FromForm] RegisterRequest model)
         {
             if (ModelState.IsValid)
             {
                 var user = new HiddenSoundUser {UserName = model.Email, Email = model.Email};
                 var result = await UserManager.CreateAsync(user, model.Password);
+
                 if (result.Succeeded)
                 {
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
-                    // Send an email with this link
-                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Context.Request.Scheme);
-                    //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                    //    "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
-                    await SignInManager.SignInAsync(user, isPersistent: false);
-                }
-                // AddErrors(result);
+                    var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+                    var callbackUrl = $"{AppSettings.Value.WebUrl}/ConfirmEmail?userId={user.Id}&code={code}";
+                    await EmailSender.SendEmailAsync(model.Email, "Confirm your account",
+                        "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
 
-                return Json(result);
+                    return Ok();
+                }
+
+                result.AddErrors(ModelState);
             }
 
-            return Json("");
+            return BadRequest(ModelState);
+        }
+
+        public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                
+            }
+
+            return BadRequest(ModelState);
         }
     }
 }

@@ -46,7 +46,8 @@ namespace HiddenSound.API
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.Configure<SendGridConfig>(Configuration.GetSection("ThirdParty:SendGrid"));
-
+            services.Configure<AppSettingsConfig>(Configuration.GetSection("AppSettings"));
+            
             var connectionString = Configuration.GetConnectionString("HiddenSoundDatabase");
             services.AddDbContext<HiddenSoundDbContext>(options =>
             {
@@ -61,7 +62,7 @@ namespace HiddenSound.API
             services.AddCors(options =>
             {
                 options.AddPolicy("AnyOrigin", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-                options.AddPolicy("Application", p => p.WithOrigins(Configuration["ApplicationUri"]).AllowAnyMethod().AllowAnyHeader());
+                options.AddPolicy("Application", p => p.WithOrigins(Configuration["AppSettings:WebUrl"]).AllowAnyMethod().AllowAnyHeader());
             });
 
             services.AddIdentity<HiddenSoundUser, HiddenSoundRole>(options =>
@@ -71,6 +72,8 @@ namespace HiddenSound.API
                     options.Password.RequireNonAlphanumeric = true;
                     options.Password.RequireUppercase = true;
                     options.Password.RequiredLength = 6;
+
+                    options.SignIn.RequireConfirmedEmail = true;
                 })
                 .AddEntityFrameworkStores<HiddenSoundDbContext, int>()
                 .AddDefaultTokenProviders();
