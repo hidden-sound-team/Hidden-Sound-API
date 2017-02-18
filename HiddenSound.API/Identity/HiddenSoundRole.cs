@@ -8,5 +8,14 @@ namespace HiddenSound.API.Identity
 {
     public class HiddenSoundRole : IdentityRole<int>
     {
+        public HiddenSoundRole()
+        {
+
+        }
+
+        public HiddenSoundRole(string roleName) : base(roleName)
+        {
+
+        }
     }
 }

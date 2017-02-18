@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Exceptions;
 using HiddenSound.API.Areas.Application.Models;
 using HiddenSound.API.Areas.Application.Services;
 using HiddenSound.API.Configuration;
@@ -36,27 +37,55 @@ namespace HiddenSound.API.Areas.Application.Controllers
                 var user = new HiddenSoundUser {UserName = model.Email, Email = model.Email};
                 var result = await UserManager.CreateAsync(user, model.Password);
 
-                if (result.Succeeded)
+                if (!result.Succeeded)
                 {
-                    var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = $"{AppSettings.Value.WebUrl}/ConfirmEmail?userId={user.Id}&code={code}";
-                    await EmailSender.SendEmailAsync(model.Email, "Confirm your account",
-                        "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">link</a>");
-
-                    return Ok();
+                    result.AddErrors(ModelState);
+                    BadRequest(ModelState);
                 }
 
-                result.AddErrors(ModelState);
+                var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+                var callbackUrl = $"{AppSettings.Value.WebUrl}/ConfirmEmail?userId={user.Id}&code={code}";
+                try
+                {
+                    await EmailSender.SendEmailAsync(model.Email, "Confirm your account", $"Please confirm your account by clicking this link: <a href=\"{callbackUrl}\">{callbackUrl}</a>");
+                }
+                catch (InvalidApiRequestException)
+                {
+                    await UserManager.DeleteAsync(user);
+                    throw;
+                }
+
+                return Ok();
             }
 
             return BadRequest(ModelState);
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("[action]")]
         public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request)
         {
             if (ModelState.IsValid)
             {
-                
+                var user = await UserManager.FindByIdAsync(request.UserID.ToString());
+
+                if (user == null)
+                {
+                    ModelState.AddModelError("UserID", "Invalid user id");
+                    return BadRequest(ModelState);
+                }
+
+                var result = await UserManager.ConfirmEmailAsync(user, request.Code);
+
+                if (!result.Succeeded)
+                {
+                    result.AddErrors(ModelState);
+                    return BadRequest(ModelState);
+
+                }
+
+                return Ok();
             }
 
             return BadRequest(ModelState);

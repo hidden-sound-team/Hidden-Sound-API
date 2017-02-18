@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using HiddenSound.API.Configuration;
+using HiddenSound.API.Helpers;
 using HiddenSound.API.Identity;
 using HiddenSound.API.Swagger;
 using Microsoft.AspNetCore.Builder;
@@ -34,6 +35,11 @@ namespace HiddenSound.API
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
+
+            if (env.IsDevelopment())
+            {
+                builder.AddUserSecrets();
+            }
 
             Configuration = builder.Build();
         }
@@ -194,43 +200,8 @@ namespace HiddenSound.API
             });
 
             appLifetime.ApplicationStopped.Register(() => ApplicationContainer.Dispose());
-            InitializeAsync(app.ApplicationServices, CancellationToken.None).GetAwaiter().GetResult();
-        }
 
-        private async Task InitializeAsync(IServiceProvider services, CancellationToken cancellationToken)
-        {
-            using (var scope = services.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var context = scope.ServiceProvider.GetRequiredService<HiddenSoundDbContext>();
-                await context.Database.EnsureCreatedAsync();
-
-                var manager = services.GetRequiredService<OpenIddictApplicationManager<OpenIddictApplication<int>>>();
-
-                if (await manager.FindByClientIdAsync("postman", cancellationToken) == null)
-                {
-                    var application = new OpenIddictApplication<int>
-                    {
-                        ClientId = "postman",
-                        DisplayName = "Postman",
-                        RedirectUri = "https://www.getpostman.com/oauth2/callback"
-                    };
-
-                    await manager.CreateAsync(application, cancellationToken);
-                }
-
-                if (await manager.FindByClientIdAsync("angular2", cancellationToken) == null)
-                {
-                    var application = new OpenIddictApplication<int>
-                    {
-                        ClientId = "angular2",
-                        DisplayName = "Angular2",
-                        RedirectUri = "http://localhost:52323",
-                        LogoutRedirectUri = "http://localhost:52323"
-                    };
-
-                    await manager.CreateAsync(application, cancellationToken);
-                }
-            }
+            app.ApplicationServices.GetService<HiddenSoundDbContext>().EnsureSeedData(app.ApplicationServices, CancellationToken.None).GetAwaiter().GetResult();
         }
     }
 }
