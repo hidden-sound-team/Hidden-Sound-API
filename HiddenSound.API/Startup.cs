@@ -53,6 +53,7 @@ namespace HiddenSound.API
         {
             services.Configure<SendGridConfig>(Configuration.GetSection("ThirdParty:SendGrid"));
             services.Configure<AppSettingsConfig>(Configuration.GetSection("AppSettings"));
+            services.Configure<DatabaseSeedConfig>(Configuration.GetSection("DatabaseSeed"));
             
             var connectionString = Configuration.GetConnectionString("HiddenSoundDatabase");
             services.AddDbContext<HiddenSoundDbContext>(options =>

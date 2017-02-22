@@ -107,6 +107,8 @@ namespace HiddenSound.API
                 await Database.MigrateAsync(cancellationToken);
             }
 
+            var databaseSeed = serviceProvider.GetRequiredService<IOptions<DatabaseSeedConfig>>().Value;
+
             var roleManager = serviceProvider.GetRequiredService<RoleManager<HiddenSoundRole>>();
 
             foreach (var role in Roles)
@@ -117,18 +119,43 @@ namespace HiddenSound.API
                 }
             }
 
-            var applicationMananger = serviceProvider.GetRequiredService<OpenIddictApplicationManager<OpenIddictApplication<int>>>();
-            var appSettings = serviceProvider.GetRequiredService<IOptions<AppSettingsConfig>>().Value;
+            var userManager = serviceProvider.GetRequiredService<UserManager<HiddenSoundUser>>();
 
-            if (await applicationMananger.FindByClientIdAsync(appSettings.ClientId, cancellationToken) == null)
+            if (await userManager.FindByNameAsync(databaseSeed.AdminUsername) == null)
+            {
+                var user = new HiddenSoundUser
+                {
+                    EmailConfirmed = true,
+                    UserName = databaseSeed.AdminUsername
+                };
+
+                await userManager.CreateAsync(user, databaseSeed.AdminPassword);
+            }
+
+            var applicationMananger = serviceProvider.GetRequiredService<OpenIddictApplicationManager<OpenIddictApplication<int>>>();
+
+            if (await applicationMananger.FindByClientIdAsync(databaseSeed.ApplicationPublicClientId, cancellationToken) == null)
             {
                 var application = new OpenIddictApplication<int>
                 {
-                    ClientId = appSettings.ClientId,
-                    DisplayName = "Application"
+                    ClientId = databaseSeed.ApplicationPublicClientId,
+                    DisplayName = "Application Public",
+                    RedirectUri = databaseSeed.ApplicationRedirectUri
                 };
 
                 await applicationMananger.CreateAsync(application, cancellationToken);
+            }
+
+            if (await applicationMananger.FindByClientIdAsync(databaseSeed.ApplicationConfidentialClientId, cancellationToken) == null)
+            {
+                var application = new OpenIddictApplication<int>
+                {
+                    ClientId = databaseSeed.ApplicationConfidentialClientId,
+                    DisplayName = "Application Confidential",
+                    RedirectUri = databaseSeed.ApplicationRedirectUri
+                };
+
+                await applicationMananger.CreateAsync(application, databaseSeed.ApplicationConfidentialClientId, cancellationToken);
             }
         }
     }

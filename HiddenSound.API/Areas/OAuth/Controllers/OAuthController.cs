@@ -5,13 +5,19 @@ using System.Threading.Tasks;
 using AspNet.Security.OpenIdConnect.Extensions;
 using AspNet.Security.OpenIdConnect.Primitives;
 using AspNet.Security.OpenIdConnect.Server;
+using HiddenSound.API.Configuration;
+using HiddenSound.API.Extensions;
+using HiddenSound.API.Helpers;
 using HiddenSound.API.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using OpenIddict.Core;
 using OpenIddict.Models;
 using SignInResult = Microsoft.AspNetCore.Mvc.SignInResult;
@@ -28,16 +34,61 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
 
         public UserManager<HiddenSoundUser> UserManager { get; set; }
 
-        [Authorize]
-        [HttpGet]
-        [Route("Authorize")]
+        public IOptions<AppSettingsConfig> AppSettings { get; set; }
+
+        public IHttpContextAccessor HttpContextAccessor { get; set; }
+
+        [HttpGet(OAuthConstants.AuthorizeRoute)]
         public async Task<IActionResult> Authorize([FromQuery] OpenIdConnectRequest request)
         {
-            return Redirect("");
+            var application = await ApplicationManager.FindByClientIdAsync(request.ClientId, HttpContext.RequestAborted);
+            if (application == null)
+            {
+                return BadRequest(new OpenIdConnectResponse
+                {
+                    Error = OpenIdConnectConstants.Errors.InvalidClient,
+                    ErrorDescription = "Details concerning the calling client application cannot be found in the database"
+                });
+            }
+
+            var redirectUri = QueryHelpers.AddQueryString($"{AppSettings.Value.WebUrl}/oauth/authorize",
+                new Dictionary<string, string>()
+                {
+                    { nameof(application.DisplayName).ToLower(), application.DisplayName },
+                    { nameof(request.RequestId).ToLower(), request.RequestId },
+                    { nameof(request.Scope).ToLower(), request.Scope ?? string.Empty }
+                });
+
+            return Redirect(redirectUri);
         }
 
-        [HttpPost]
-        [Route(OAuthConstants.TokenRoute)]
+        [Authorize]
+        [HttpPost(OAuthConstants.AuthorizeRoute)]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AuthorizePost([FromBody] OpenIdConnectRequest request)
+        {
+            if (!string.IsNullOrEmpty(HttpContextAccessor.HttpContext.Request.Form["submit.Deny"]))
+            {
+                // Notify OpenIddict that the authorization grant has been denied by the resource owner
+                // to redirect the user agent to the client application using the appropriate response_mode.
+                return Forbid(OpenIdConnectServerDefaults.AuthenticationScheme);
+            }
+
+            var user = await UserManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return BadRequest(new OpenIdConnectResponse
+                {
+                    Error = OpenIdConnectConstants.Errors.ServerError,
+                    ErrorDescription = "An internal error has occurred"
+                });
+            }
+
+            var ticket = await CreateTicketAsync(request, user);
+            return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
+        }
+
+        [HttpPost(OAuthConstants.TokenRoute)]
         [ProducesResponseType(typeof(SignInResult), 200)]
         [ProducesResponseType(typeof(OpenIdConnectResponse), 400)]
         [Consumes("application/x-www-form-urlencoded")]

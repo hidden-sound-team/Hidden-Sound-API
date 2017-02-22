@@ -7,5 +7,7 @@
         public const string TokenRoute = "Token";
 
         public const string UserInfoRoute = "UserInfo";
+
+        public const string AuthorizeRoute = "Authorize";
     }
 }
