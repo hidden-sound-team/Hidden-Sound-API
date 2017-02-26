@@ -182,14 +182,16 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
 
             var ticket = new AuthenticationTicket(principal, properties, OpenIdConnectServerDefaults.AuthenticationScheme);
 
+
+
             if (!request.IsAuthorizationCodeGrantType() && !request.IsRefreshTokenGrantType())
             {
                 ticket.SetScopes(new[] {
                     OpenIdConnectConstants.Scopes.OpenId,
-                    OpenIdConnectConstants.Scopes.Email,
-                    OpenIdConnectConstants.Scopes.Profile,
+                    // OpenIdConnectConstants.Scopes.Email,
+                    // OpenIdConnectConstants.Scopes.Profile,
                     // OpenIdConnectConstants.Scopes.OfflineAccess,
-                    OpenIddictConstants.Scopes.Roles
+                    // OpenIddictConstants.Scopes.Roles
                 }.Intersect(request.GetScopes()));
             }
 
