@@ -28,11 +28,11 @@ namespace HiddenSound.API.Areas.Shared.Models
 
         [Column("User_ID")]
         [ForeignKey("User")]
-        public int? UserID { get; set; }
+        public Guid? UserID { get; set; }
 
         [Column("Vendor_ID")]
         [ForeignKey("Vendor")]
-        public int? VendorID { get; set; }
+        public Guid? VendorID { get; set; }
 
         [Column("Expires_On")]
         [Required]

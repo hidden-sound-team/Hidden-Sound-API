@@ -60,7 +60,7 @@ namespace HiddenSound.API
             {
                 options.UseSqlServer(connectionString);
 
-                options.UseOpenIddict<int>();
+                options.UseOpenIddict<Guid>();
             });
 
             services.AddMemoryCache();
@@ -82,10 +82,10 @@ namespace HiddenSound.API
 
                     options.SignIn.RequireConfirmedEmail = true;
                 })
-                .AddEntityFrameworkStores<HiddenSoundDbContext, int>()
+                .AddEntityFrameworkStores<HiddenSoundDbContext, Guid>()
                 .AddDefaultTokenProviders();
 
-            services.AddOpenIddict<int>()
+            services.AddOpenIddict<Guid>()
                 .AddEntityFrameworkCoreStores<HiddenSoundDbContext>()
                 .AddMvcBinders()
                 .EnableAuthorizationEndpoint("/OAuth/Authorize")

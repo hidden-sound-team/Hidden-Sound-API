@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace HiddenSound.API.Migrations
 {
-    public partial class initial : Migration
+    public partial class rebase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -17,8 +17,7 @@ namespace HiddenSound.API.Migrations
                 schema: "Security",
                 columns: table => new
                 {
-                    AspNetRoleId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    AspNetRoleId = table.Column<Guid>(nullable: false, defaultValueSql: "newsequentialid()"),
                     ConcurrencyStamp = table.Column<string>(nullable: true),
                     Name = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(maxLength: 256, nullable: true)
@@ -33,12 +32,13 @@ namespace HiddenSound.API.Migrations
                 schema: "Security",
                 columns: table => new
                 {
-                    AspNetUserId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    AspNetUserId = table.Column<Guid>(nullable: false, defaultValueSql: "newsequentialid()"),
                     AccessFailedCount = table.Column<int>(nullable: false),
                     ConcurrencyStamp = table.Column<string>(nullable: true),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(nullable: false),
+                    FirstName = table.Column<string>(nullable: true),
+                    LastName = table.Column<string>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
@@ -60,7 +60,7 @@ namespace HiddenSound.API.Migrations
                 schema: "Security",
                 columns: table => new
                 {
-                    AspNetUserId = table.Column<int>(nullable: false),
+                    AspNetUserId = table.Column<Guid>(nullable: false),
                     LoginProvider = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: false),
                     Value = table.Column<string>(nullable: true)
@@ -74,8 +74,7 @@ namespace HiddenSound.API.Migrations
                 name: "OpenIddictApplications",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false, defaultValueSql: "newsequentialid()"),
                     ClientId = table.Column<string>(nullable: true),
                     ClientSecret = table.Column<string>(nullable: true),
                     DisplayName = table.Column<string>(nullable: true),
@@ -92,8 +91,7 @@ namespace HiddenSound.API.Migrations
                 name: "OpenIddictScopes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false),
                     Description = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -110,7 +108,7 @@ namespace HiddenSound.API.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true),
-                    AspNetRoleId = table.Column<int>(nullable: false)
+                    AspNetRoleId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -125,6 +123,58 @@ namespace HiddenSound.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Device",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    IMEI = table.Column<string>(nullable: false),
+                    UserID = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Device", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Device_AspNetUser_UserID",
+                        column: x => x.UserID,
+                        principalSchema: "Security",
+                        principalTable: "AspNetUser",
+                        principalColumn: "AspNetUserId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Transaction",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Authorization_Code = table.Column<string>(maxLength: 50, nullable: false),
+                    Expires_On = table.Column<DateTime>(nullable: false),
+                    Status = table.Column<int>(nullable: false),
+                    User_ID = table.Column<Guid>(nullable: true),
+                    Vendor_ID = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transaction", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Transaction_AspNetUser_User_ID",
+                        column: x => x.User_ID,
+                        principalSchema: "Security",
+                        principalTable: "AspNetUser",
+                        principalColumn: "AspNetUserId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Transaction_AspNetUser_Vendor_ID",
+                        column: x => x.Vendor_ID,
+                        principalSchema: "Security",
+                        principalTable: "AspNetUser",
+                        principalColumn: "AspNetUserId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUserClaim",
                 schema: "Security",
                 columns: table => new
@@ -133,7 +183,7 @@ namespace HiddenSound.API.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true),
-                    AspNetUserId = table.Column<int>(nullable: false)
+                    AspNetUserId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -155,7 +205,7 @@ namespace HiddenSound.API.Migrations
                     LoginProvider = table.Column<string>(nullable: false),
                     ProviderKey = table.Column<string>(nullable: false),
                     ProviderDisplayName = table.Column<string>(nullable: true),
-                    AspNetUserId = table.Column<int>(nullable: false)
+                    AspNetUserId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -174,8 +224,8 @@ namespace HiddenSound.API.Migrations
                 schema: "Security",
                 columns: table => new
                 {
-                    AspNetUserId = table.Column<int>(nullable: false),
-                    AspNetRoleId = table.Column<int>(nullable: false)
+                    AspNetUserId = table.Column<Guid>(nullable: false),
+                    AspNetRoleId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -200,9 +250,8 @@ namespace HiddenSound.API.Migrations
                 name: "OpenIddictAuthorizations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    ApplicationId = table.Column<int>(nullable: true),
+                    Id = table.Column<Guid>(nullable: false),
+                    ApplicationId = table.Column<Guid>(nullable: true),
                     Scope = table.Column<string>(nullable: true),
                     Subject = table.Column<string>(nullable: true)
                 },
@@ -221,10 +270,9 @@ namespace HiddenSound.API.Migrations
                 name: "OpenIddictTokens",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    ApplicationId = table.Column<int>(nullable: true),
-                    AuthorizationId = table.Column<int>(nullable: true),
+                    Id = table.Column<Guid>(nullable: false),
+                    ApplicationId = table.Column<Guid>(nullable: true),
+                    AuthorizationId = table.Column<Guid>(nullable: true),
                     Subject = table.Column<string>(nullable: true),
                     Type = table.Column<string>(nullable: true)
                 },
@@ -244,6 +292,21 @@ namespace HiddenSound.API.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Device_UserID",
+                table: "Device",
+                column: "UserID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transaction_User_ID",
+                table: "Transaction",
+                column: "User_ID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transaction_Vendor_ID",
+                table: "Transaction",
+                column: "Vendor_ID");
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
@@ -313,6 +376,12 @@ namespace HiddenSound.API.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Device");
+
+            migrationBuilder.DropTable(
+                name: "Transaction");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaim",
                 schema: "Security");

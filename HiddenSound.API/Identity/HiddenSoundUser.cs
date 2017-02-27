@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace HiddenSound.API.Identity
 {
-    public class HiddenSoundUser : IdentityUser<int>
+    public class HiddenSoundUser : IdentityUser<Guid>
     {
         public string FirstName { get; set; }
 

@@ -28,7 +28,7 @@ namespace HiddenSound.API.Migrations
                         .IsRequired()
                         .HasColumnName("IMEI");
 
-                    b.Property<int?>("UserID")
+                    b.Property<Guid?>("UserID")
                         .HasColumnName("UserID");
 
                     b.HasKey("ID");
@@ -56,10 +56,10 @@ namespace HiddenSound.API.Migrations
                     b.Property<int>("Status")
                         .HasColumnName("Status");
 
-                    b.Property<int?>("UserID")
+                    b.Property<Guid?>("UserID")
                         .HasColumnName("User_ID");
 
-                    b.Property<int?>("VendorID")
+                    b.Property<Guid?>("VendorID")
                         .HasColumnName("Vendor_ID");
 
                     b.HasKey("ID");
@@ -73,9 +73,10 @@ namespace HiddenSound.API.Migrations
 
             modelBuilder.Entity("HiddenSound.API.Identity.HiddenSoundRole", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("AspNetRoleId");
+                        .HasColumnName("AspNetRoleId")
+                        .HasDefaultValueSql("newsequentialid()");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
@@ -97,9 +98,10 @@ namespace HiddenSound.API.Migrations
 
             modelBuilder.Entity("HiddenSound.API.Identity.HiddenSoundUser", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("AspNetUserId");
+                        .HasColumnName("AspNetUserId")
+                        .HasDefaultValueSql("newsequentialid()");
 
                     b.Property<int>("AccessFailedCount");
 
@@ -150,7 +152,7 @@ namespace HiddenSound.API.Migrations
                     b.ToTable("AspNetUser","Security");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -160,7 +162,7 @@ namespace HiddenSound.API.Migrations
 
                     b.Property<string>("ClaimValue");
 
-                    b.Property<int>("RoleId")
+                    b.Property<Guid>("RoleId")
                         .HasColumnName("AspNetRoleId");
 
                     b.HasKey("Id");
@@ -170,7 +172,7 @@ namespace HiddenSound.API.Migrations
                     b.ToTable("AspNetRoleClaim","Security");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -180,7 +182,7 @@ namespace HiddenSound.API.Migrations
 
                     b.Property<string>("ClaimValue");
 
-                    b.Property<int>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnName("AspNetUserId");
 
                     b.HasKey("Id");
@@ -190,7 +192,7 @@ namespace HiddenSound.API.Migrations
                     b.ToTable("AspNetUserClaim","Security");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserLogin<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserLogin<System.Guid>", b =>
                 {
                     b.Property<string>("LoginProvider");
 
@@ -198,7 +200,7 @@ namespace HiddenSound.API.Migrations
 
                     b.Property<string>("ProviderDisplayName");
 
-                    b.Property<int>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnName("AspNetUserId");
 
                     b.HasKey("LoginProvider", "ProviderKey");
@@ -208,12 +210,12 @@ namespace HiddenSound.API.Migrations
                     b.ToTable("AspNetUserLogin","Security");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserRole<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnName("AspNetUserId");
 
-                    b.Property<int>("RoleId")
+                    b.Property<Guid>("RoleId")
                         .HasColumnName("AspNetRoleId");
 
                     b.HasKey("UserId", "RoleId");
@@ -223,9 +225,9 @@ namespace HiddenSound.API.Migrations
                     b.ToTable("AspNetUserRole","Security");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserToken<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<Guid>("UserId")
                         .HasColumnName("AspNetUserId");
 
                     b.Property<string>("LoginProvider");
@@ -239,10 +241,11 @@ namespace HiddenSound.API.Migrations
                     b.ToTable("AspNetUserToken","Security");
                 });
 
-            modelBuilder.Entity("OpenIddict.Models.OpenIddictApplication<int>", b =>
+            modelBuilder.Entity("OpenIddict.Models.OpenIddictApplication<System.Guid>", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValueSql("newsequentialid()");
 
                     b.Property<string>("ClientId");
 
@@ -264,12 +267,12 @@ namespace HiddenSound.API.Migrations
                     b.ToTable("OpenIddictApplications");
                 });
 
-            modelBuilder.Entity("OpenIddict.Models.OpenIddictAuthorization<int>", b =>
+            modelBuilder.Entity("OpenIddict.Models.OpenIddictAuthorization<System.Guid>", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("ApplicationId");
+                    b.Property<Guid?>("ApplicationId");
 
                     b.Property<string>("Scope");
 
@@ -282,9 +285,9 @@ namespace HiddenSound.API.Migrations
                     b.ToTable("OpenIddictAuthorizations");
                 });
 
-            modelBuilder.Entity("OpenIddict.Models.OpenIddictScope<int>", b =>
+            modelBuilder.Entity("OpenIddict.Models.OpenIddictScope<System.Guid>", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Description");
@@ -294,14 +297,14 @@ namespace HiddenSound.API.Migrations
                     b.ToTable("OpenIddictScopes");
                 });
 
-            modelBuilder.Entity("OpenIddict.Models.OpenIddictToken<int>", b =>
+            modelBuilder.Entity("OpenIddict.Models.OpenIddictToken<System.Guid>", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("ApplicationId");
+                    b.Property<Guid?>("ApplicationId");
 
-                    b.Property<int?>("AuthorizationId");
+                    b.Property<Guid?>("AuthorizationId");
 
                     b.Property<string>("Subject");
 
@@ -334,7 +337,7 @@ namespace HiddenSound.API.Migrations
                         .HasForeignKey("VendorID");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("HiddenSound.API.Identity.HiddenSoundRole")
                         .WithMany("Claims")
@@ -342,7 +345,7 @@ namespace HiddenSound.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserClaim<System.Guid>", b =>
                 {
                     b.HasOne("HiddenSound.API.Identity.HiddenSoundUser")
                         .WithMany("Claims")
@@ -350,7 +353,7 @@ namespace HiddenSound.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserLogin<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserLogin<System.Guid>", b =>
                 {
                     b.HasOne("HiddenSound.API.Identity.HiddenSoundUser")
                         .WithMany("Logins")
@@ -358,7 +361,7 @@ namespace HiddenSound.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserRole<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserRole<System.Guid>", b =>
                 {
                     b.HasOne("HiddenSound.API.Identity.HiddenSoundRole")
                         .WithMany("Users")
@@ -371,20 +374,20 @@ namespace HiddenSound.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("OpenIddict.Models.OpenIddictAuthorization<int>", b =>
+            modelBuilder.Entity("OpenIddict.Models.OpenIddictAuthorization<System.Guid>", b =>
                 {
-                    b.HasOne("OpenIddict.Models.OpenIddictApplication<int>", "Application")
+                    b.HasOne("OpenIddict.Models.OpenIddictApplication<System.Guid>", "Application")
                         .WithMany("Authorizations")
                         .HasForeignKey("ApplicationId");
                 });
 
-            modelBuilder.Entity("OpenIddict.Models.OpenIddictToken<int>", b =>
+            modelBuilder.Entity("OpenIddict.Models.OpenIddictToken<System.Guid>", b =>
                 {
-                    b.HasOne("OpenIddict.Models.OpenIddictApplication<int>", "Application")
+                    b.HasOne("OpenIddict.Models.OpenIddictApplication<System.Guid>", "Application")
                         .WithMany("Tokens")
                         .HasForeignKey("ApplicationId");
 
-                    b.HasOne("OpenIddict.Models.OpenIddictAuthorization<int>", "Authorization")
+                    b.HasOne("OpenIddict.Models.OpenIddictAuthorization<System.Guid>", "Authorization")
                         .WithMany("Tokens")
                         .HasForeignKey("AuthorizationId");
                 });

@@ -9,6 +9,7 @@ using HiddenSound.API.Configuration;
 using HiddenSound.API.Extensions;
 using HiddenSound.API.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -51,10 +52,11 @@ namespace HiddenSound.API.Areas.Application.Controllers
                 }
 
                 var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
-                var callbackUrl = $"{AppSettings.Value.WebUrl}/api/confirmemail?userId={user.Id}&code={code}";
+                var callbackUrl = Url.Action("ConfirmEmail", "User", new {userId = user.Id, code = code}, Request.Scheme);
+
                 try
                 {
-                    await EmailSender.SendEmailAsync(model.Email, "Confirm your account", $"Please confirm your account by clicking this link: <a href=\"{callbackUrl}\">{callbackUrl}</a>");
+                    await EmailSender.SendEmailAsync(model.Email, "Confirm your account", $"<a href=\"{callbackUrl}\">{callbackUrl}</a>");
                 }
                 catch (InvalidApiRequestException)
                 {
@@ -62,20 +64,20 @@ namespace HiddenSound.API.Areas.Application.Controllers
                     throw;
                 }
 
-                return Ok();
+                return Ok(callbackUrl);
             }
 
             return BadRequest(ModelState);
         }
 
-        [HttpPost]
+        [HttpGet]
         [AllowAnonymous]
         [Route("[action]")]
-        public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequest request)
+        public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string code)
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindByIdAsync(request.UserID.ToString());
+                var user = await UserManager.FindByIdAsync(userId);
 
                 if (user == null)
                 {
@@ -83,7 +85,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var result = await UserManager.ConfirmEmailAsync(user, request.Code);
+                var result = await UserManager.ConfirmEmailAsync(user, code);
 
                 if (!result.Succeeded)
                 {
@@ -92,7 +94,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
 
                 }
 
-                return Ok();
+                return Redirect($"{AppSettings.Value.WebUrl}/login");
             }
 
             return BadRequest(ModelState);

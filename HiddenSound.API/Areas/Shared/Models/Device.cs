@@ -24,7 +24,7 @@ namespace HiddenSound.API.Areas.Shared.Models
 
         [Column("UserID")]
         [ForeignKey("User")]
-        public int? UserID { get; set; }
+        public Guid? UserID { get; set; }
 
         [JsonIgnore]
         public HiddenSoundUser User { get; set; }

@@ -28,7 +28,7 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
     [Area("OAuth")]
     public class OAuthController : Controller
     {
-        public OpenIddictApplicationManager<OpenIddictApplication<int>> ApplicationManager { get; set; }
+        public OpenIddictApplicationManager<OpenIddictApplication<Guid>> ApplicationManager { get; set; }
 
         public SignInManager<HiddenSoundUser> SignInManager { get; set; }
 
@@ -112,7 +112,7 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
                     return BadRequest(new OpenIdConnectResponse
                     {
                         Error = OpenIdConnectConstants.Errors.InvalidGrant,
-                        ErrorDescription = "The specified user is not allowed to sign in."
+                        ErrorDescription = "You must have a confirmed email to log in."
                     });
                 }
 
