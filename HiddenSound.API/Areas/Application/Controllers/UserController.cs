@@ -34,7 +34,14 @@ namespace HiddenSound.API.Areas.Application.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new HiddenSoundUser {UserName = model.Email, Email = model.Email};
+                var user = new HiddenSoundUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName
+                };
+
                 var result = await UserManager.CreateAsync(user, model.Password);
 
                 if (!result.Succeeded)
@@ -44,7 +51,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
                 }
 
                 var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
-                var callbackUrl = $"{AppSettings.Value.WebUrl}/ConfirmEmail?userId={user.Id}&code={code}";
+                var callbackUrl = $"{AppSettings.Value.WebUrl}/api/confirmemail?userId={user.Id}&code={code}";
                 try
                 {
                     await EmailSender.SendEmailAsync(model.Email, "Confirm your account", $"Please confirm your account by clicking this link: <a href=\"{callbackUrl}\">{callbackUrl}</a>");

@@ -9,6 +9,14 @@ namespace HiddenSound.API.Areas.Application.Models
     public class RegisterRequest
     {
         [Required]
+        [MinLength(2)]
+        public string FirstName { get; set; }
+
+        [Required]
+        [MinLength(2)]
+        public string LastName { get; set; }
+
+        [Required]
         [EmailAddress]
         public string Email { get; set; }
 
@@ -20,7 +28,5 @@ namespace HiddenSound.API.Areas.Application.Models
         [DataType(DataType.Password)]
         [Compare("Password")]
         public string ConfirmPassword { get; set; }
-
-        public bool IsDeveloper { get; set; }
     }
 }
