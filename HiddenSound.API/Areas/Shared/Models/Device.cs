@@ -9,24 +9,21 @@ using Newtonsoft.Json;
 
 namespace HiddenSound.API.Areas.Shared.Models
 {
-    [Table("Device")]
     public class Device
     {
-        [Column("ID")]
         [Key]
         [Required]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        public Guid Id { get; set; }
 
-        [Column("IMEI")]
+        [Required]
+        public string Name { get; set; }
+        
         [Required]
         public string IMEI { get; set; }
-
-        [Column("UserID")]
+        
         [ForeignKey("User")]
-        public Guid? UserID { get; set; }
-
-        [JsonIgnore]
+        public Guid? UserId { get; set; }
+        
         public HiddenSoundUser User { get; set; }
     }
 }

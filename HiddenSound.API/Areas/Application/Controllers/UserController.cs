@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Exceptions;
 using HiddenSound.API.Areas.Application.Models;
+using HiddenSound.API.Areas.Application.Models.Responses;
 using HiddenSound.API.Areas.Application.Services;
 using HiddenSound.API.Configuration;
 using HiddenSound.API.Extensions;
@@ -27,6 +28,22 @@ namespace HiddenSound.API.Areas.Application.Controllers
         public IEmailSender EmailSender { get; set; }
 
         public IOptions<AppSettingsConfig> AppSettings { get; set; }
+
+        [HttpGet("[action]")]
+        [Authorize]
+        [ProducesResponseType(typeof(UserInfoResponse), 200)]
+        public async Task<IActionResult> Info()
+        {
+            var user = await UserManager.GetUserAsync(User);
+            var response = new UserInfoResponse
+            {
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName
+            };
+
+            return Ok(response);
+        }
 
         [HttpPost]
         [AllowAnonymous]

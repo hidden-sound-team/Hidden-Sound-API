@@ -69,8 +69,6 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
         {
             if (!string.IsNullOrEmpty(HttpContextAccessor.HttpContext.Request.Form["submit.Deny"]))
             {
-                // Notify OpenIddict that the authorization grant has been denied by the resource owner
-                // to redirect the user agent to the client application using the appropriate response_mode.
                 return Forbid(OpenIdConnectServerDefaults.AuthenticationScheme);
             }
 
@@ -105,8 +103,7 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
                         ErrorDescription = "The username/password couple is invalid."
                     });
                 }
-
-                // Ensure the user is allowed to sign in.
+                
                 if (!await SignInManager.CanSignInAsync(user))
                 {
                     return BadRequest(new OpenIdConnectResponse
@@ -115,8 +112,7 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
                         ErrorDescription = "You must have a confirmed email to log in."
                     });
                 }
-
-                // Reject the token request if two-factor authentication has been enabled by the user.
+                
                 if (UserManager.SupportsUserTwoFactor && await UserManager.GetTwoFactorEnabledAsync(user))
                 {
                     return BadRequest(new OpenIdConnectResponse
@@ -125,8 +121,7 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
                         ErrorDescription = "The specified user is not allowed to sign in."
                     });
                 }
-
-                // Ensure the user is not already locked out.
+                
                 if (UserManager.SupportsUserLockout && await UserManager.IsLockedOutAsync(user))
                 {
                     return BadRequest(new OpenIdConnectResponse
@@ -135,8 +130,7 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
                         ErrorDescription = "The username/password couple is invalid."
                     });
                 }
-
-                // Ensure the password is valid.
+                
                 if (!await UserManager.CheckPasswordAsync(user, request.Password))
                 {
                     if (UserManager.SupportsUserLockout)

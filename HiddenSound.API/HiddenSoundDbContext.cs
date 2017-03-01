@@ -23,6 +23,8 @@ namespace HiddenSound.API
     {
         public virtual DbSet<Transaction> Transactions { get; set; }
 
+        public virtual DbSet<Device> Devices { get; set; }
+
         private static readonly string[] Roles = { "Administrator", "Basic" };
 
         public HiddenSoundDbContext(DbContextOptions<HiddenSoundDbContext> options) : base(options)
@@ -33,59 +35,56 @@ namespace HiddenSound.API
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
-            // Customize the ASP.NET Identity model and override the defaults if needed.
-            // For example, you can rename the ASP.NET Identity table names and more.
-            // Add your customizations after calling base.OnModelCreating(builder);
+            
             builder.Entity<HiddenSoundUser>(entity =>
             {
-                entity.ToTable(name: "AspNetUser", schema: "Security");
-                entity.Property(e => e.Id).HasColumnName("AspNetUserId").HasDefaultValueSql("newsequentialid()");
+                entity.ToTable("User", "Security");
+                entity.Property(e => e.Id).HasColumnName("UserId").HasDefaultValueSql("newsequentialid()");
 
             });
 
             builder.Entity<HiddenSoundRole>(entity =>
             {
-                entity.ToTable(name: "AspNetRole", schema: "Security");
-                entity.Property(e => e.Id).HasColumnName("AspNetRoleId").HasDefaultValueSql("newsequentialid()"); ;
+                entity.ToTable("Role", "Security");
+                entity.Property(e => e.Id).HasColumnName("RoleId").HasDefaultValueSql("newsequentialid()"); ;
 
             });
 
             builder.Entity<IdentityUserClaim<Guid>>(entity =>
             {
-                entity.ToTable("AspNetUserClaim", "Security");
-                entity.Property(e => e.UserId).HasColumnName("AspNetUserId");
-                entity.Property(e => e.Id).HasColumnName("AspNetUserClaimId"); ;
+                entity.ToTable("UserClaim", "Security");
+                entity.Property(e => e.UserId).HasColumnName("UserId");
+                entity.Property(e => e.Id).HasColumnName("UserClaimId"); ;
 
             });
 
             builder.Entity<IdentityUserLogin<Guid>>(entity =>
             {
-                entity.ToTable("AspNetUserLogin", "Security");
-                entity.Property(e => e.UserId).HasColumnName("AspNetUserId");
+                entity.ToTable("UserLogin", "Security");
+                entity.Property(e => e.UserId).HasColumnName("UserId");
 
             });
 
             builder.Entity<IdentityRoleClaim<Guid>>(entity =>
             {
-                entity.ToTable("AspNetRoleClaim", "Security");
-                entity.Property(e => e.Id).HasColumnName("AspNetRoleClaimId"); ;
-                entity.Property(e => e.RoleId).HasColumnName("AspNetRoleId");
+                entity.ToTable("RoleClaim", "Security");
+                entity.Property(e => e.Id).HasColumnName("RoleClaimId"); ;
+                entity.Property(e => e.RoleId).HasColumnName("RoleId");
             });
 
             builder.Entity<IdentityUserRole<Guid>>(entity =>
             {
-                entity.ToTable("AspNetUserRole", "Security");
-                entity.Property(e => e.UserId).HasColumnName("AspNetUserId");
-                entity.Property(e => e.RoleId).HasColumnName("AspNetRoleId");
+                entity.ToTable("UserRole", "Security");
+                entity.Property(e => e.UserId).HasColumnName("UserId");
+                entity.Property(e => e.RoleId).HasColumnName("RoleId");
 
             });
 
 
             builder.Entity<IdentityUserToken<Guid>>(entity =>
             {
-                entity.ToTable("AspNetUserToken", "Security");
-                entity.Property(e => e.UserId).HasColumnName("AspNetUserId");
+                entity.ToTable("UserToken", "Security");
+                entity.Property(e => e.UserId).HasColumnName("UserId");
 
             });
 
@@ -101,12 +100,14 @@ namespace HiddenSound.API
 
             builder.Entity<Transaction>(entity =>
             {
-               
+                entity.ToTable("Transaction");
+                entity.Property(e => e.Id).HasDefaultValueSql("newsequentialid()");
             });
 
             builder.Entity<Device>(entity =>
             {
-
+                entity.ToTable("Device");
+                entity.Property(e => e.Id).HasDefaultValueSql("newsequentialid()");
             });
         }
 
@@ -140,6 +141,20 @@ namespace HiddenSound.API
                 };
 
                 await userManager.CreateAsync(user, databaseSeed.AdminPassword);
+            }
+
+            var createdUser = await userManager.FindByNameAsync(databaseSeed.AdminUsername);
+
+            if (!Devices.Any(d => d.UserId == createdUser.Id))
+            {
+                Devices.Add(new Device()
+                {
+                    IMEI = "1234",
+                    Name = "My Device",
+                    UserId = createdUser.Id
+                });
+
+                SaveChanges();
             }
 
             var applicationMananger = serviceProvider.GetRequiredService<OpenIddictApplicationManager<OpenIddictApplication<Guid>>>();

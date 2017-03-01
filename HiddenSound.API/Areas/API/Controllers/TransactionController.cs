@@ -45,8 +45,8 @@ namespace HiddenSound.API.Areas.API.Controllers
                 Base64QR = qrCode,
                 ExpiresOn = DateTime.UtcNow.AddSeconds(5 * 60),
                 Status = TransactionStatus.Pending,
-                UserID = Guid.NewGuid(),
-                VendorID = Guid.NewGuid()
+                UserId = Guid.NewGuid(),
+                VendorId = Guid.NewGuid()
             };
 
             TransactionRepository.CreateTransaction(transaction);

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace HiddenSound.API.Migrations
 {
-    public partial class rebase : Migration
+    public partial class latest : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,26 +13,26 @@ namespace HiddenSound.API.Migrations
                 name: "Security");
 
             migrationBuilder.CreateTable(
-                name: "AspNetRole",
+                name: "Role",
                 schema: "Security",
                 columns: table => new
                 {
-                    AspNetRoleId = table.Column<Guid>(nullable: false, defaultValueSql: "newsequentialid()"),
+                    RoleId = table.Column<Guid>(nullable: false, defaultValueSql: "newsequentialid()"),
                     ConcurrencyStamp = table.Column<string>(nullable: true),
                     Name = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetRole", x => x.AspNetRoleId);
+                    table.PrimaryKey("PK_Role", x => x.RoleId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUser",
+                name: "User",
                 schema: "Security",
                 columns: table => new
                 {
-                    AspNetUserId = table.Column<Guid>(nullable: false, defaultValueSql: "newsequentialid()"),
+                    UserId = table.Column<Guid>(nullable: false, defaultValueSql: "newsequentialid()"),
                     AccessFailedCount = table.Column<int>(nullable: false),
                     ConcurrencyStamp = table.Column<string>(nullable: true),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
@@ -52,22 +52,22 @@ namespace HiddenSound.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUser", x => x.AspNetUserId);
+                    table.PrimaryKey("PK_User", x => x.UserId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserToken",
+                name: "UserToken",
                 schema: "Security",
                 columns: table => new
                 {
-                    AspNetUserId = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: false),
                     LoginProvider = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: false),
                     Value = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUserToken", x => new { x.AspNetUserId, x.LoginProvider, x.Name });
+                    table.PrimaryKey("PK_UserToken", x => new { x.UserId, x.LoginProvider, x.Name });
                 });
 
             migrationBuilder.CreateTable(
@@ -100,25 +100,25 @@ namespace HiddenSound.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetRoleClaim",
+                name: "RoleClaim",
                 schema: "Security",
                 columns: table => new
                 {
-                    AspNetRoleClaimId = table.Column<int>(nullable: false)
+                    RoleClaimId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true),
-                    AspNetRoleId = table.Column<Guid>(nullable: false)
+                    RoleId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetRoleClaim", x => x.AspNetRoleClaimId);
+                    table.PrimaryKey("PK_RoleClaim", x => x.RoleClaimId);
                     table.ForeignKey(
-                        name: "FK_AspNetRoleClaim_AspNetRole_AspNetRoleId",
-                        column: x => x.AspNetRoleId,
+                        name: "FK_RoleClaim_Role_RoleId",
+                        column: x => x.RoleId,
                         principalSchema: "Security",
-                        principalTable: "AspNetRole",
-                        principalColumn: "AspNetRoleId",
+                        principalTable: "Role",
+                        principalColumn: "RoleId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -126,20 +126,20 @@ namespace HiddenSound.API.Migrations
                 name: "Device",
                 columns: table => new
                 {
-                    ID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false, defaultValueSql: "newsequentialid()"),
                     IMEI = table.Column<string>(nullable: false),
-                    UserID = table.Column<Guid>(nullable: true)
+                    Name = table.Column<string>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Device", x => x.ID);
+                    table.PrimaryKey("PK_Device", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Device_AspNetUser_UserID",
-                        column: x => x.UserID,
+                        name: "FK_Device_User_UserId",
+                        column: x => x.UserId,
                         principalSchema: "Security",
-                        principalTable: "AspNetUser",
-                        principalColumn: "AspNetUserId",
+                        principalTable: "User",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -147,102 +147,101 @@ namespace HiddenSound.API.Migrations
                 name: "Transaction",
                 columns: table => new
                 {
-                    ID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Authorization_Code = table.Column<string>(maxLength: 50, nullable: false),
-                    Expires_On = table.Column<DateTime>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false, defaultValueSql: "newsequentialid()"),
+                    AuthorizationCode = table.Column<string>(maxLength: 50, nullable: false),
+                    ExpiresOn = table.Column<DateTime>(nullable: false),
                     Status = table.Column<int>(nullable: false),
-                    User_ID = table.Column<Guid>(nullable: true),
-                    Vendor_ID = table.Column<Guid>(nullable: true)
+                    UserId = table.Column<Guid>(nullable: true),
+                    VendorId = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Transaction", x => x.ID);
+                    table.PrimaryKey("PK_Transaction", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Transaction_AspNetUser_User_ID",
-                        column: x => x.User_ID,
+                        name: "FK_Transaction_User_UserId",
+                        column: x => x.UserId,
                         principalSchema: "Security",
-                        principalTable: "AspNetUser",
-                        principalColumn: "AspNetUserId",
+                        principalTable: "User",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Transaction_AspNetUser_Vendor_ID",
-                        column: x => x.Vendor_ID,
+                        name: "FK_Transaction_User_VendorId",
+                        column: x => x.VendorId,
                         principalSchema: "Security",
-                        principalTable: "AspNetUser",
-                        principalColumn: "AspNetUserId",
+                        principalTable: "User",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserClaim",
+                name: "UserClaim",
                 schema: "Security",
                 columns: table => new
                 {
-                    AspNetUserClaimId = table.Column<int>(nullable: false)
+                    UserClaimId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     ClaimType = table.Column<string>(nullable: true),
                     ClaimValue = table.Column<string>(nullable: true),
-                    AspNetUserId = table.Column<Guid>(nullable: false)
+                    UserId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUserClaim", x => x.AspNetUserClaimId);
+                    table.PrimaryKey("PK_UserClaim", x => x.UserClaimId);
                     table.ForeignKey(
-                        name: "FK_AspNetUserClaim_AspNetUser_AspNetUserId",
-                        column: x => x.AspNetUserId,
+                        name: "FK_UserClaim_User_UserId",
+                        column: x => x.UserId,
                         principalSchema: "Security",
-                        principalTable: "AspNetUser",
-                        principalColumn: "AspNetUserId",
+                        principalTable: "User",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserLogin",
+                name: "UserLogin",
                 schema: "Security",
                 columns: table => new
                 {
                     LoginProvider = table.Column<string>(nullable: false),
                     ProviderKey = table.Column<string>(nullable: false),
                     ProviderDisplayName = table.Column<string>(nullable: true),
-                    AspNetUserId = table.Column<Guid>(nullable: false)
+                    UserId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUserLogin", x => new { x.LoginProvider, x.ProviderKey });
+                    table.PrimaryKey("PK_UserLogin", x => new { x.LoginProvider, x.ProviderKey });
                     table.ForeignKey(
-                        name: "FK_AspNetUserLogin_AspNetUser_AspNetUserId",
-                        column: x => x.AspNetUserId,
+                        name: "FK_UserLogin_User_UserId",
+                        column: x => x.UserId,
                         principalSchema: "Security",
-                        principalTable: "AspNetUser",
-                        principalColumn: "AspNetUserId",
+                        principalTable: "User",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserRole",
+                name: "UserRole",
                 schema: "Security",
                 columns: table => new
                 {
-                    AspNetUserId = table.Column<Guid>(nullable: false),
-                    AspNetRoleId = table.Column<Guid>(nullable: false)
+                    UserId = table.Column<Guid>(nullable: false),
+                    RoleId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUserRole", x => new { x.AspNetUserId, x.AspNetRoleId });
+                    table.PrimaryKey("PK_UserRole", x => new { x.UserId, x.RoleId });
                     table.ForeignKey(
-                        name: "FK_AspNetUserRole_AspNetRole_AspNetRoleId",
-                        column: x => x.AspNetRoleId,
+                        name: "FK_UserRole_Role_RoleId",
+                        column: x => x.RoleId,
                         principalSchema: "Security",
-                        principalTable: "AspNetRole",
-                        principalColumn: "AspNetRoleId",
+                        principalTable: "Role",
+                        principalColumn: "RoleId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AspNetUserRole_AspNetUser_AspNetUserId",
-                        column: x => x.AspNetUserId,
+                        name: "FK_UserRole_User_UserId",
+                        column: x => x.UserId,
                         principalSchema: "Security",
-                        principalTable: "AspNetUser",
-                        principalColumn: "AspNetUserId",
+                        principalTable: "User",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -294,63 +293,63 @@ namespace HiddenSound.API.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Device_UserID",
+                name: "IX_Device_UserId",
                 table: "Device",
-                column: "UserID");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Transaction_User_ID",
+                name: "IX_Transaction_UserId",
                 table: "Transaction",
-                column: "User_ID");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Transaction_Vendor_ID",
+                name: "IX_Transaction_VendorId",
                 table: "Transaction",
-                column: "Vendor_ID");
+                column: "VendorId");
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
                 schema: "Security",
-                table: "AspNetRole",
+                table: "Role",
                 column: "NormalizedName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 schema: "Security",
-                table: "AspNetUser",
+                table: "User",
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 schema: "Security",
-                table: "AspNetUser",
+                table: "User",
                 column: "NormalizedUserName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetRoleClaim_AspNetRoleId",
+                name: "IX_RoleClaim_RoleId",
                 schema: "Security",
-                table: "AspNetRoleClaim",
-                column: "AspNetRoleId");
+                table: "RoleClaim",
+                column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserClaim_AspNetUserId",
+                name: "IX_UserClaim_UserId",
                 schema: "Security",
-                table: "AspNetUserClaim",
-                column: "AspNetUserId");
+                table: "UserClaim",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserLogin_AspNetUserId",
+                name: "IX_UserLogin_UserId",
                 schema: "Security",
-                table: "AspNetUserLogin",
-                column: "AspNetUserId");
+                table: "UserLogin",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserRole_AspNetRoleId",
+                name: "IX_UserRole_RoleId",
                 schema: "Security",
-                table: "AspNetUserRole",
-                column: "AspNetRoleId");
+                table: "UserRole",
+                column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OpenIddictApplications_ClientId",
@@ -383,23 +382,23 @@ namespace HiddenSound.API.Migrations
                 name: "Transaction");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoleClaim",
+                name: "RoleClaim",
                 schema: "Security");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserClaim",
+                name: "UserClaim",
                 schema: "Security");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserLogin",
+                name: "UserLogin",
                 schema: "Security");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserRole",
+                name: "UserRole",
                 schema: "Security");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserToken",
+                name: "UserToken",
                 schema: "Security");
 
             migrationBuilder.DropTable(
@@ -409,11 +408,11 @@ namespace HiddenSound.API.Migrations
                 name: "OpenIddictTokens");
 
             migrationBuilder.DropTable(
-                name: "AspNetRole",
+                name: "Role",
                 schema: "Security");
 
             migrationBuilder.DropTable(
-                name: "AspNetUser",
+                name: "User",
                 schema: "Security");
 
             migrationBuilder.DropTable(

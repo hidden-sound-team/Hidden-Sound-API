@@ -8,33 +8,25 @@ using Newtonsoft.Json;
 
 namespace HiddenSound.API.Areas.Shared.Models
 {
-    [Table("Transaction")]
     public class Transaction
     {
-        [Column("ID")]
         [Key]
         [Required]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
-
-        [Column("Authorization_Code")]
+        public Guid Id { get; set; }
+        
         [Required]
         [MaxLength(50)]
         public string AuthorizationCode { get; set; }
-
-        [Column("Status")]
+        
         [Required]
         public TransactionStatus Status { get; set; }
-
-        [Column("User_ID")]
+        
         [ForeignKey("User")]
-        public Guid? UserID { get; set; }
-
-        [Column("Vendor_ID")]
+        public Guid? UserId { get; set; }
+        
         [ForeignKey("Vendor")]
-        public Guid? VendorID { get; set; }
-
-        [Column("Expires_On")]
+        public Guid? VendorId { get; set; }
+        
         [Required]
         public DateTime ExpiresOn { get; set; }
 
