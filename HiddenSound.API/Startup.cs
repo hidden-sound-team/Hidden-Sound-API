@@ -164,10 +164,13 @@ namespace HiddenSound.API
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            if (env.IsDevelopment())
+            if (!env.IsProduction())
             {
                 app.UseDeveloperExceptionPage();
+            }
 
+            if (env.IsDevelopment())
+            {
                 var builder = new ConfigurationBuilder()
                     .SetBasePath(env.ContentRootPath)
                     .AddJsonFile(@"Properties/launchSettings.json", optional: false, reloadOnChange: true);
