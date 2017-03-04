@@ -113,9 +113,12 @@ namespace HiddenSound.API
 
         public async Task EnsureSeedData(IServiceProvider serviceProvider, CancellationToken cancellationToken)
         {
+            await Database.EnsureDeletedAsync(cancellationToken);
+            await Database.EnsureCreatedAsync(cancellationToken);
+
             if (Database.GetPendingMigrations().Any())
             {
-                await Database.MigrateAsync(cancellationToken);
+                // await Database.MigrateAsync(cancellationToken);
             }
 
             var databaseSeed = serviceProvider.GetRequiredService<IOptions<DatabaseSeedConfig>>().Value;
