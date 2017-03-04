@@ -182,6 +182,15 @@ namespace HiddenSound.API
 
                 await applicationMananger.CreateAsync(application, databaseSeed.ApplicationConfidentialClientId, cancellationToken);
             }
+
+            //var authorizationManager =
+            //    serviceProvider.GetRequiredService<OpenIddictAuthorizationManager<OpenIddictAuthorization<Guid>>>();
+
+            //authorizationManager.CreateAsync(new OpenIddictAuthorization<Guid>()
+            //{
+            //    Application = await applicationMananger.FindByClientIdAsync(databaseSeed.ApplicationPublicClientId, cancellationToken),
+
+            //})
         }
     }
 }

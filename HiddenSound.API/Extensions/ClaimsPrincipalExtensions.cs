@@ -19,5 +19,12 @@ namespace HiddenSound.API.Extensions
                                                      .Cast<Match>()
                                                      .Any(m => m.Groups[1].Value.Equals(scope, StringComparison.OrdinalIgnoreCase)));
         }
+
+        public static void AddClaim(this ClaimsPrincipal claimsPrincipal, string type, string value, string valueType)
+        {
+            var identity = (ClaimsIdentity)claimsPrincipal.Identity;
+            var officeClaim = new Claim(type, value, valueType);
+            identity.AddClaim(officeClaim);
+        }
     }
 }

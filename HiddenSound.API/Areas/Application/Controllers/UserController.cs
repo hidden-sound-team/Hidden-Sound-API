@@ -30,7 +30,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
         public IOptions<AppSettingsConfig> AppSettings { get; set; }
 
         [HttpGet("[action]")]
-        [Authorize]
+        [Authorize("Application")]
         [ProducesResponseType(typeof(UserInfoResponse), 200)]
         public async Task<IActionResult> Info()
         {

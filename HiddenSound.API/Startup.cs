@@ -23,6 +23,8 @@ using Microsoft.EntityFrameworkCore;
 using OpenIddict.Core;
 using OpenIddict.Models;
 using Swashbuckle.AspNetCore.Swagger;
+using System.Collections.Generic;
+using AspNet.Security.OpenIdConnect.Primitives;
 
 namespace HiddenSound.API
 {
@@ -85,6 +87,13 @@ namespace HiddenSound.API
                 .AddEntityFrameworkStores<HiddenSoundDbContext, Guid>()
                 .AddDefaultTokenProviders();
 
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.ClaimsIdentity.UserNameClaimType = OpenIdConnectConstants.Claims.Name;
+                options.ClaimsIdentity.UserIdClaimType = OpenIdConnectConstants.Claims.Subject;
+                options.ClaimsIdentity.RoleClaimType = OpenIdConnectConstants.Claims.Role;
+            });
+
             services.AddOpenIddict<Guid>()
                 .AddEntityFrameworkCoreStores<HiddenSoundDbContext>()
                 .AddMvcBinders()
@@ -98,6 +107,11 @@ namespace HiddenSound.API
                 .EnableRequestCaching()
                 .DisableHttpsRequirement();
 
+            services.AddAuthorization(c =>
+            {
+                c.AddPolicy("Application", b => b.RequireClaim("application"));
+            });
+
             services.AddMvc(options =>
             {
 
@@ -108,6 +122,18 @@ namespace HiddenSound.API
                 c.SwaggerDoc("v1", new Info { Title = "HiddenSound API", Version = "v1" });
 
                 c.OperationFilter<ReplaceTagOperationFilter>();
+
+                c.AddSecurityDefinition("oauth2", new OAuth2Scheme
+                {
+                    Type = "oauth2",
+                    Flow = "password",
+                    TokenUrl = "https://localhost:44333/OAuth/Token",
+                    Scopes = new Dictionary<string, string>()
+                    {
+                        { "openid", "OpenID" },
+                        { "application", "Application" }
+                    }
+                });
             });
 
 
@@ -194,8 +220,9 @@ namespace HiddenSound.API
 
             app.UseSwagger();
 
-            app.UseSwaggerUi(c =>
+            app.UseSwaggerUI(c =>
             {
+                c.ConfigureOAuth2("t4JTk7f8K3NmGv0q9X5Scs6I2", "AQAAAAEAACcQAAAAENPJPgYTgC9u7eBzZu+x4xRIwuISbx6flG1CM9nhSNZHokLRit0Ou5Y2w7VJgqJsqQ==", "", "Application Confidential");
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "HiddenSound v1");
                 c.DocExpansion("none");
             });

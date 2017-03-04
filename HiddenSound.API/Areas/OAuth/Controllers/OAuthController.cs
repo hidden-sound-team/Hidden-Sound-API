@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AspNet.Security.OpenIdConnect.Extensions;
 using AspNet.Security.OpenIdConnect.Primitives;
@@ -150,7 +151,9 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
                     await UserManager.ResetAccessFailedCountAsync(user);
                 }
 
-                var ticket = await CreateTicketAsync(request, user);
+                var principal = await SignInManager.CreateUserPrincipalAsync(user);
+                principal.AddClaim("application", "true", ClaimValueTypes.Boolean);
+                var ticket = CreateTicketAsync(request, principal);
 
                 return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
             }
@@ -162,11 +165,8 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
             });
         }
 
-        private async Task<AuthenticationTicket> CreateTicketAsync(OpenIdConnectRequest request, HiddenSoundUser user,
-            AuthenticationProperties properties = null)
+        private AuthenticationTicket CreateTicketAsync(OpenIdConnectRequest request, ClaimsPrincipal principal, AuthenticationProperties properties = null)
         {
-            var principal = await SignInManager.CreateUserPrincipalAsync(user);
-                
             // add token to destinations so the user can be serialized into the token
             foreach (var claim in principal.Claims)
             {                
@@ -175,13 +175,12 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
             }
 
             var ticket = new AuthenticationTicket(principal, properties, OpenIdConnectServerDefaults.AuthenticationScheme);
-
-
+        
 
             if (!request.IsAuthorizationCodeGrantType() && !request.IsRefreshTokenGrantType())
             {
                 ticket.SetScopes(new[] {
-                    OpenIdConnectConstants.Scopes.OpenId,
+                    OpenIdConnectConstants.Scopes.OpenId
                     // OpenIdConnectConstants.Scopes.Email,
                     // OpenIdConnectConstants.Scopes.Profile,
                     // OpenIdConnectConstants.Scopes.OfflineAccess,
