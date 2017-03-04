@@ -71,7 +71,7 @@ namespace HiddenSound.API
             services.AddCors(options =>
             {
                 options.AddPolicy("AnyOrigin", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-                options.AddPolicy("Application", p => p.WithOrigins(Configuration["AppSettings:WebUrl"]).AllowAnyMethod().AllowAnyHeader());
+                options.AddPolicy("Application", p => p.WithOrigins(Configuration["AppSettings:WebUri"]).AllowAnyMethod().AllowAnyHeader());
             });
 
             services.AddIdentity<HiddenSoundUser, HiddenSoundRole>(options =>
@@ -122,17 +122,12 @@ namespace HiddenSound.API
                 c.SwaggerDoc("v1", new Info { Title = "HiddenSound API", Version = "v1" });
 
                 c.OperationFilter<ReplaceTagOperationFilter>();
-
+                
                 c.AddSecurityDefinition("oauth2", new OAuth2Scheme
                 {
                     Type = "oauth2",
                     Flow = "password",
-                    TokenUrl = "https://localhost:44333/OAuth/Token",
-                    Scopes = new Dictionary<string, string>()
-                    {
-                        { "openid", "OpenID" },
-                        { "application", "Application" }
-                    }
+                    TokenUrl = $"{Configuration["AppSettings:ApiUri"]}/{OAuthConstants.ControllerRoute}/{OAuthConstants.TokenRoute}"
                 });
             });
 
@@ -222,7 +217,6 @@ namespace HiddenSound.API
 
             app.UseSwaggerUI(c =>
             {
-                c.ConfigureOAuth2("t4JTk7f8K3NmGv0q9X5Scs6I2", "AQAAAAEAACcQAAAAENPJPgYTgC9u7eBzZu+x4xRIwuISbx6flG1CM9nhSNZHokLRit0Ou5Y2w7VJgqJsqQ==", "", "Application Confidential");
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "HiddenSound v1");
                 c.DocExpansion("none");
             });

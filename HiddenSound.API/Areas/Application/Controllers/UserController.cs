@@ -98,7 +98,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
 
                 if (user == null)
                 {
-                    ModelState.AddModelError("UserID", "Invalid user id");
+                    ModelState.AddModelError("UserId", "Invalid user id");
                     return BadRequest(ModelState);
                 }
 
@@ -111,7 +111,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
 
                 }
 
-                return Redirect($"{AppSettings.Value.WebUrl}/login");
+                return Redirect($"{AppSettings.Value.WebUri}/login");
             }
 
             return BadRequest(ModelState);

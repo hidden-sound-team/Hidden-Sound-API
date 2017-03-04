@@ -52,7 +52,7 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
                 });
             }
 
-            var redirectUri = QueryHelpers.AddQueryString($"{AppSettings.Value.WebUrl}/oauth/authorize",
+            var redirectUri = QueryHelpers.AddQueryString($"{AppSettings.Value.WebUri}/oauth/authorize",
                 new Dictionary<string, string>()
                 {
                     { nameof(application.DisplayName).ToLower(), application.DisplayName },
@@ -83,7 +83,8 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
                 });
             }
 
-            var ticket = await CreateTicketAsync(request, user);
+            var principal = await SignInManager.CreateUserPrincipalAsync(user);
+            var ticket = CreateTicketAsync(request, principal);
             return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
         }
 

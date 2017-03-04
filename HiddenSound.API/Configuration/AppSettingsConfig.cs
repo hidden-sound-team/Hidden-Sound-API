@@ -7,7 +7,9 @@ namespace HiddenSound.API.Configuration
 {
     public class AppSettingsConfig
     {
-        public string WebUrl { get; set; }
+        public string WebUri { get; set; }
+
+        public string ApiUri { get; set; }
 
         public string ClientId { get; set; }
 
