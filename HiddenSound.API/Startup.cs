@@ -110,6 +110,7 @@ namespace HiddenSound.API
             services.AddAuthorization(c =>
             {
                 c.AddPolicy("Application", b => b.RequireClaim("application"));
+                c.AddPolicy("Api", b => b.RequireClaim("api"));
             });
 
             services.AddMvc(options =>

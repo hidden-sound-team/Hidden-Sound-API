@@ -84,7 +84,8 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
             }
 
             var principal = await SignInManager.CreateUserPrincipalAsync(user);
-            var ticket = CreateTicketAsync(request, principal);
+            principal.AddClaim("api", "true", ClaimValueTypes.Boolean);
+            var ticket = CreateTicket(request, principal);
             return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
         }
 
@@ -94,6 +95,35 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
         [Consumes("application/x-www-form-urlencoded")]
         public async Task<IActionResult> Token([FromBody] OpenIdConnectRequest request)
         {
+            if (request.IsAuthorizationCodeGrantType())
+            {
+                var info = await HttpContext.Authentication.GetAuthenticateInfoAsync(OpenIdConnectServerDefaults.AuthenticationScheme);
+
+                var user = await UserManager.GetUserAsync(info.Principal);
+                if (user == null)
+                {
+                    return BadRequest(new OpenIdConnectResponse
+                    {
+                        Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                        ErrorDescription = "The authorization code is no longer valid."
+                    });
+                }
+
+                if (!await SignInManager.CanSignInAsync(user))
+                {
+                    return BadRequest(new OpenIdConnectResponse
+                    {
+                        Error = OpenIdConnectConstants.Errors.InvalidGrant,
+                        ErrorDescription = "The user is no longer allowed to sign in."
+                    });
+                }
+
+                var principal = await SignInManager.CreateUserPrincipalAsync(user);
+                var ticket = CreateTicket(request, principal, info.Properties);
+
+                return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
+            }
+
             if (request.IsPasswordGrantType())
             {
                 var user = await UserManager.FindByNameAsync(request.Username);
@@ -154,7 +184,8 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
 
                 var principal = await SignInManager.CreateUserPrincipalAsync(user);
                 principal.AddClaim("application", "true", ClaimValueTypes.Boolean);
-                var ticket = CreateTicketAsync(request, principal);
+                principal.AddClaim("api", "true", ClaimValueTypes.Boolean);
+                var ticket = CreateTicket(request, principal);
 
                 return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
             }
@@ -166,7 +197,7 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
             });
         }
 
-        private AuthenticationTicket CreateTicketAsync(OpenIdConnectRequest request, ClaimsPrincipal principal, AuthenticationProperties properties = null)
+        private AuthenticationTicket CreateTicket(OpenIdConnectRequest request, ClaimsPrincipal principal, AuthenticationProperties properties = null)
         {
             // add token to destinations so the user can be serialized into the token
             foreach (var claim in principal.Claims)
@@ -176,7 +207,6 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
             }
 
             var ticket = new AuthenticationTicket(principal, properties, OpenIdConnectServerDefaults.AuthenticationScheme);
-        
 
             if (!request.IsAuthorizationCodeGrantType() && !request.IsRefreshTokenGrantType())
             {

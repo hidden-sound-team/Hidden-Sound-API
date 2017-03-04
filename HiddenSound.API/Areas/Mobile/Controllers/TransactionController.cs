@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using HiddenSound.API.Areas.Mobile.Models.Requests;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,8 +11,9 @@ namespace HiddenSound.API.Areas.Mobile.Controllers
     [Route("Mobile/[controller]")]
     public class TransactionController : Controller
     {
-        [HttpPost]
-        [Route("[action]")]
+        [HttpPost("[action]")]
+        [Authorize("Application")]
+
         public ActionResult Authorize([FromBody]TransactionAuthorizeRequest request)
         {
             return Json(request);

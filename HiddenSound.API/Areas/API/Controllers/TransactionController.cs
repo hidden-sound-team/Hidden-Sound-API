@@ -5,6 +5,7 @@ using HiddenSound.API.Areas.API.Models.Responses;
 using HiddenSound.API.Areas.API.Services;
 using HiddenSound.API.Areas.Shared.Models;
 using HiddenSound.API.Areas.Shared.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,15 +19,15 @@ namespace HiddenSound.API.Areas.API.Controllers
 
         public ITransactionRepository TransactionRepository { get; set; }
 
-        [HttpGet]
-        [Route("[action]")]
+        [HttpGet("[action]")]
+        [Authorize("Api")]
         public ActionResult List()
         {
             return Json(TransactionRepository.GetAllTransactions());
         }
 
-        [HttpPost]
-        [Route("[action]")]
+        [HttpPost("[action]")]
+        [Authorize("Api")]
         [ProducesResponseType(typeof(TransactionCreateResponse), 200)]
         public ActionResult Create()
         {
@@ -59,8 +60,8 @@ namespace HiddenSound.API.Areas.API.Controllers
             return Json(response);
         }
 
-        [HttpGet]
-        [Route("[action]")]
+        [HttpGet("[action]")]
+        [Authorize("Api")]
         [ProducesResponseType(typeof(TransactionStatusResponse), 200)]
         [ProducesResponseType(typeof(TransactionStatusResponse), 404)]
         public ActionResult Status([FromQuery] string authorizationCode)
@@ -86,8 +87,8 @@ namespace HiddenSound.API.Areas.API.Controllers
             return Ok(response);
         }
 
-        [HttpGet]
-        [Route("[action]")]
+        [HttpGet("[action]")]
+        [Authorize("Api")]
         [ProducesResponseType(typeof(Transaction), 200)]
         [ProducesResponseType(typeof(TransactionStatusResponse), 404)]
         public ActionResult Info([FromQuery] string authorizationCode)
