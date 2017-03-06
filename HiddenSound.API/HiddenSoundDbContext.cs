@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OpenIddict.Core;
+using OpenIddict.EntityFrameworkCore;
 using OpenIddict.Models;
 
 namespace HiddenSound.API
@@ -182,7 +183,7 @@ namespace HiddenSound.API
 
                 await applicationMananger.CreateAsync(application, databaseSeed.ApplicationConfidentialClientId, cancellationToken);
             }
-
+            
             //var authorizationManager =
             //    serviceProvider.GetRequiredService<OpenIddictAuthorizationManager<OpenIddictAuthorization<Guid>>>();
 

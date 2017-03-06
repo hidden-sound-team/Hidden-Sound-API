@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Exceptions;
 using HiddenSound.API.Areas.Application.Models;
+using HiddenSound.API.Areas.Application.Models.Requests;
 using HiddenSound.API.Areas.Application.Models.Responses;
 using HiddenSound.API.Areas.Application.Services;
 using HiddenSound.API.Configuration;
@@ -21,8 +22,6 @@ namespace HiddenSound.API.Areas.Application.Controllers
     [Route("Application/[controller]")]
     public class UserController : ApplicationController
     {
-        public SignInManager<HiddenSoundUser> SignInManager { get; set; }
-
         public UserManager<HiddenSoundUser> UserManager { get; set; }
 
         public IEmailSender EmailSender { get; set; }
@@ -45,9 +44,8 @@ namespace HiddenSound.API.Areas.Application.Controllers
             return Ok(response);
         }
 
-        [HttpPost]
+        [HttpPost("[action]")]
         [AllowAnonymous]
-        [Route("[action]")]
         public async Task<IActionResult> Register([FromForm] RegisterRequest model)
         {
             if (ModelState.IsValid)
@@ -87,9 +85,8 @@ namespace HiddenSound.API.Areas.Application.Controllers
             return BadRequest(ModelState);
         }
 
-        [HttpGet]
+        [HttpGet("[action]")]
         [AllowAnonymous]
-        [Route("[action]")]
         public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string code)
         {
             if (ModelState.IsValid)
@@ -112,6 +109,52 @@ namespace HiddenSound.API.Areas.Application.Controllers
                 }
 
                 return Redirect($"{AppSettings.Value.WebUri}/login");
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        [HttpGet("[action]")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RequestPasswordReset(string email)
+        {
+            var user = await UserManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                return BadRequest("Invalid email");
+            }
+
+            if (!await UserManager.IsEmailConfirmedAsync(user))
+            {
+                return BadRequest("User has not confirmed their email");
+            }
+
+            var token = await UserManager.GeneratePasswordResetTokenAsync(user);
+
+            var callbackUrl = $"{AppSettings.Value.WebUri}/resetpassword?token={token}";
+            await EmailSender.SendEmailAsync(email, "Reset Password", $"Please reset your password by clicking here: <a href='{callbackUrl}'>{callbackUrl}</a>");
+
+            return Ok();
+        }
+
+        [HttpPost("[action]")]
+        [Authorize("Application")]
+        public async Task<IActionResult> ChangePassword([FromForm] ChangePasswordRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await UserManager.GetUserAsync(User);
+
+                var result = await UserManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+
+                if (!result.Succeeded)
+                {
+                    result.AddErrors(ModelState);
+                    return BadRequest(ModelState);
+                }
+
+                return Ok();
             }
 
             return BadRequest(ModelState);
