@@ -19,7 +19,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
         public HiddenSoundDbContext HiddenSoundDbContext { get; set; }
 
         [HttpGet("[action]")]
-        [Authorize]
+        [Authorize("Application")]
         [ProducesResponseType(typeof(DeviceListResponse), 200)]
         public async Task<IActionResult> List()
         {
