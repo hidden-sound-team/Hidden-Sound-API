@@ -17,6 +17,7 @@ using Microsoft.Extensions.Options;
 using OpenIddict.Core;
 using OpenIddict.EntityFrameworkCore;
 using OpenIddict.Models;
+using HiddenSound.API.OpenIddict;
 
 namespace HiddenSound.API
 {
@@ -26,7 +27,7 @@ namespace HiddenSound.API
 
         public virtual DbSet<Device> Devices { get; set; }
 
-        private static readonly string[] Roles = { "Administrator", "Basic" };
+        private static readonly string[] SeedRoles = { "Administrator", "Basic" };
 
         public HiddenSoundDbContext(DbContextOptions<HiddenSoundDbContext> options) : base(options)
         {
@@ -89,13 +90,27 @@ namespace HiddenSound.API
 
             });
 
-            builder.Entity<OpenIddictApplication<Guid>>(entity =>
+            builder.Entity<HSOpenIddictApplication>(entity =>
             {
+                entity.ToTable("OpenIddictApplications");
                 entity.Property(e => e.Id).HasDefaultValueSql("newsequentialid()");
             });
 
-            builder.Entity<OpenIddictApplication<Guid>>(entity =>
+            builder.Entity<HSOpenIddictAuthorization>(entity =>
             {
+                entity.ToTable("OpenIddictAuthorizations");
+                entity.Property(e => e.Id).HasDefaultValueSql("newsequentialid()");
+            });
+
+            builder.Entity<HSOpenIddictScope>(entity =>
+            {
+                entity.ToTable("OpenIddictScopes");
+                entity.Property(e => e.Id).HasDefaultValueSql("newsequentialid()");
+            });
+
+            builder.Entity<HSOpenIddictToken>(entity =>
+            {
+                entity.ToTable("OpenIddictTokens");
                 entity.Property(e => e.Id).HasDefaultValueSql("newsequentialid()");
             });
 
@@ -116,14 +131,14 @@ namespace HiddenSound.API
         {
             if (Database.GetPendingMigrations().Any())
             {
-                // await Database.MigrateAsync(cancellationToken);
+                await Database.MigrateAsync(cancellationToken);
             }
 
             var databaseSeed = serviceProvider.GetRequiredService<IOptions<DatabaseSeedConfig>>().Value;
 
             var roleManager = serviceProvider.GetRequiredService<RoleManager<HiddenSoundRole>>();
 
-            foreach (var role in Roles)
+            foreach (var role in SeedRoles)
             {
                 if (!await roleManager.RoleExistsAsync(role))
                 {
@@ -158,15 +173,16 @@ namespace HiddenSound.API
                 SaveChanges();
             }
 
-            var applicationMananger = serviceProvider.GetRequiredService<OpenIddictApplicationManager<OpenIddictApplication<Guid>>>();
+            var applicationMananger = serviceProvider.GetRequiredService<OpenIddictApplicationManager<HSOpenIddictApplication>>();
 
             if (await applicationMananger.FindByClientIdAsync(databaseSeed.ApplicationPublicClientId, cancellationToken) == null)
             {
-                var application = new OpenIddictApplication<Guid>
+                var application = new HSOpenIddictApplication
                 {
                     ClientId = databaseSeed.ApplicationPublicClientId,
                     DisplayName = "Application Public",
-                    RedirectUri = databaseSeed.ApplicationRedirectUri
+                    RedirectUri = databaseSeed.ApplicationRedirectUri,
+                    UserId = createdUser.Id
                 };
 
                 await applicationMananger.CreateAsync(application, cancellationToken);
@@ -174,24 +190,16 @@ namespace HiddenSound.API
 
             if (await applicationMananger.FindByClientIdAsync(databaseSeed.ApplicationConfidentialClientId, cancellationToken) == null)
             {
-                var application = new OpenIddictApplication<Guid>
+                var application = new HSOpenIddictApplication
                 {
                     ClientId = databaseSeed.ApplicationConfidentialClientId,
                     DisplayName = "Application Confidential",
-                    RedirectUri = databaseSeed.ApplicationRedirectUri
+                    RedirectUri = databaseSeed.ApplicationRedirectUri,
+                    UserId = createdUser.Id
                 };
 
                 await applicationMananger.CreateAsync(application, databaseSeed.ApplicationConfidentialClientId, cancellationToken);
             }
-            
-            //var authorizationManager =
-            //    serviceProvider.GetRequiredService<OpenIddictAuthorizationManager<OpenIddictAuthorization<Guid>>>();
-
-            //authorizationManager.CreateAsync(new OpenIddictAuthorization<Guid>()
-            //{
-            //    Application = await applicationMananger.FindByClientIdAsync(databaseSeed.ApplicationPublicClientId, cancellationToken),
-
-            //})
         }
     }
 }

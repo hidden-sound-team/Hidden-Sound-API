@@ -28,7 +28,6 @@ namespace HiddenSound.API.Areas.Shared.Repositories
 
         public List<Transaction> GetAllTransactions()
         {
-            return new List<Transaction>();
             return DbContext.Transactions.ToList();
         }
     }

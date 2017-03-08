@@ -6,25 +6,20 @@ using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using HiddenSound.API.Configuration;
-using HiddenSound.API.Helpers;
 using HiddenSound.API.Identity;
 using HiddenSound.API.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
-using OpenIddict.Core;
-using OpenIddict.Models;
 using Swashbuckle.AspNetCore.Swagger;
-using System.Collections.Generic;
 using AspNet.Security.OpenIdConnect.Primitives;
+using HiddenSound.API.OpenIddict;
 
 namespace HiddenSound.API
 {
@@ -40,7 +35,7 @@ namespace HiddenSound.API
 
             if (env.IsDevelopment())
             {
-                builder.AddUserSecrets();
+                builder.AddUserSecrets<Startup>();
             }
 
             Configuration = builder.Build();
@@ -62,7 +57,7 @@ namespace HiddenSound.API
             {
                 options.UseSqlServer(connectionString);
 
-                options.UseOpenIddict<Guid>();
+                options.UseOpenIddict<HSOpenIddictApplication, HSOpenIddictAuthorization, HSOpenIddictScope, HSOpenIddictToken, Guid>();
             });
 
             services.AddMemoryCache();
@@ -94,7 +89,7 @@ namespace HiddenSound.API
                 options.ClaimsIdentity.RoleClaimType = OpenIdConnectConstants.Claims.Role;
             });
 
-            services.AddOpenIddict<Guid>()
+            services.AddOpenIddict<HSOpenIddictApplication, HSOpenIddictAuthorization, HSOpenIddictScope, HSOpenIddictToken>()
                 .AddEntityFrameworkCoreStores<HiddenSoundDbContext>()
                 .AddMvcBinders()
                 .EnableAuthorizationEndpoint("/OAuth/Authorize")
