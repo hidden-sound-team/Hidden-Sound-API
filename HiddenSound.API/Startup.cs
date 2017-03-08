@@ -39,11 +39,14 @@ namespace HiddenSound.API
             }
 
             Configuration = builder.Build();
+            CurrentEnvironment = env;
         }
 
         public IContainer ApplicationContainer { get; private set; }
 
         public IConfigurationRoot Configuration { get; }
+
+        private IHostingEnvironment CurrentEnvironment { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
@@ -118,6 +121,11 @@ namespace HiddenSound.API
                 c.SwaggerDoc("v1", new Info { Title = "HiddenSound API", Version = "v1" });
 
                 c.OperationFilter<ReplaceTagOperationFilter>();
+
+                if (CurrentEnvironment.IsProduction())
+                {
+                    c.DocumentFilter<HideOperationFilter>();
+                }
                 
                 c.AddSecurityDefinition("oauth2", new OAuth2Scheme
                 {
