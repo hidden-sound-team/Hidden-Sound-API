@@ -22,6 +22,8 @@ using Microsoft.Extensions.Options;
 using OpenIddict.Core;
 using OpenIddict.Models;
 using SignInResult = Microsoft.AspNetCore.Mvc.SignInResult;
+using HiddenSound.API.OpenIddict;
+using System.Net;
 
 namespace HiddenSound.API.Areas.OAuth.Controllers
 {
@@ -29,15 +31,13 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
     [Area("OAuth")]
     public class OAuthController : Controller
     {
-        public OpenIddictApplicationManager<OpenIddictApplication<Guid>> ApplicationManager { get; set; }
+        public OpenIddictApplicationManager<HSOpenIddictApplication> ApplicationManager { get; set; }
 
         public SignInManager<HiddenSoundUser> SignInManager { get; set; }
 
         public UserManager<HiddenSoundUser> UserManager { get; set; }
 
         public IOptions<AppSettingsConfig> AppSettings { get; set; }
-
-        public IHttpContextAccessor HttpContextAccessor { get; set; }
 
         [HttpGet(OAuthConstants.AuthorizeRoute)]
         public async Task<IActionResult> Authorize([FromQuery] OpenIdConnectRequest request)
@@ -52,12 +52,12 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
                 });
             }
 
-            var redirectUri = QueryHelpers.AddQueryString($"{AppSettings.Value.WebUri}/oauth/authorize",
+            var redirectUri = QueryHelpers.AddQueryString($"{AppSettings.Value.WebUri}/authorize",
                 new Dictionary<string, string>()
                 {
-                    { nameof(application.DisplayName).ToLower(), application.DisplayName },
-                    { nameof(request.RequestId).ToLower(), request.RequestId },
-                    { nameof(request.Scope).ToLower(), request.Scope ?? string.Empty }
+                    { "application", WebUtility.UrlEncode(application.DisplayName) },
+                    { "request_id", WebUtility.UrlEncode(request.RequestId) },
+                    { "scope", WebUtility.UrlEncode(request.Scope) ?? string.Empty }
                 });
 
             return Redirect(redirectUri);
@@ -68,7 +68,7 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AuthorizePost([FromBody] OpenIdConnectRequest request)
         {
-            if (!string.IsNullOrEmpty(HttpContextAccessor.HttpContext.Request.Form["submit.Deny"]))
+            if (!string.IsNullOrEmpty(HttpContext.Request.Form["submit.Deny"]))
             {
                 return Forbid(OpenIdConnectServerDefaults.AuthenticationScheme);
             }
