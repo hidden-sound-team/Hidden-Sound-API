@@ -22,6 +22,7 @@ namespace HiddenSound.API.Areas.Mobile.Controllers
 
         [HttpPost("[action]")]
         [Authorize("Application")]
+        [ProducesResponseType(400)]
         public IActionResult Link([FromBody] DeviceLinkRequest request)
         {
             if (ModelState.IsValid)
