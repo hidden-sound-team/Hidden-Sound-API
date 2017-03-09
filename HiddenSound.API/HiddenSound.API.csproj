@@ -33,11 +33,11 @@
     <PackageReference Include="QRCoder" Version="1.2.5" />
     <PackageReference Include="CryptoHelper" Version="2.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="1.0.0-rc3" />
-    <PackageReference Include="OpenIddict" Version="1.0.0-*" />
-    <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="1.0.0-*" />
-    <PackageReference Include="OpenIddict.Mvc" Version="1.0.0-beta2-0564" />
+    <PackageReference Include="OpenIddict" Version="1.0.0-beta2-0578" />
+    <PackageReference Include="OpenIddict.EntityFrameworkCore" Version="1.0.0-beta2-0578" />
+    <PackageReference Include="OpenIddict.Mvc" Version="1.0.0-beta2-0578" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="1.1.1" />
-    <PackageReference Include="AspNet.Security.OAuth.Validation" Version="1.0.0-alpha3-final" />
+    <PackageReference Include="AspNet.Security.OAuth.Validation" Version="1.0.0-beta1-final" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="1.1.1" />
   </ItemGroup>
 
