@@ -153,7 +153,8 @@ namespace HiddenSound.API
                 var user = new HiddenSoundUser
                 {
                     EmailConfirmed = true,
-                    UserName = databaseSeed.AdminUsername
+                    UserName = databaseSeed.AdminUsername,
+                    Email = databaseSeed.AdminUsername
                 };
 
                 await userManager.CreateAsync(user, databaseSeed.AdminPassword);

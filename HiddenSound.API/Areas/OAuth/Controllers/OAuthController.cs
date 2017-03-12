@@ -186,6 +186,7 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
                 principal.AddClaim("application", "true", ClaimValueTypes.Boolean);
                 principal.AddClaim("api", "true", ClaimValueTypes.Boolean);
                 var ticket = CreateTicket(request, principal);
+                
 
                 return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
             }

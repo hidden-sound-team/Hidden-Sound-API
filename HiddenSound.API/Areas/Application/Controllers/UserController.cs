@@ -22,7 +22,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
     [Route("Application/[controller]")]
     public class UserController : ApplicationController
     {
-        public UserManager<HiddenSoundUser> UserManager { get; set; }
+            public UserManager<HiddenSoundUser> UserManager { get; set; }
 
         public IEmailSender EmailSender { get; set; }
 
@@ -36,7 +36,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
             var user = await UserManager.GetUserAsync(User);
             var response = new UserInfoResponse
             {
-                Email = user.Email,
+                Username = user.UserName,
                 FirstName = user.FirstName,
                 LastName = user.LastName
             };

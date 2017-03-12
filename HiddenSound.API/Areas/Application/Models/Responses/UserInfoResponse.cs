@@ -11,6 +11,6 @@ namespace HiddenSound.API.Areas.Application.Models.Responses
         
         public string LastName { get; set; }
 
-        public string Email { get; set; }
+        public string Username { get; set; }
     }
 }
