@@ -35,7 +35,7 @@ namespace HiddenSound.API
 
             if (env.IsDevelopment())
             {
-                builder.AddUserSecrets<Startup>();
+                builder.AddUserSecrets();
             }
 
             Configuration = builder.Build();
