@@ -22,7 +22,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
     [Route("Application/[controller]")]
     public class UserController : ApplicationController
     {
-            public UserManager<HiddenSoundUser> UserManager { get; set; }
+        public UserManager<HiddenSoundUser> UserManager { get; set; }
 
         public IEmailSender EmailSender { get; set; }
 

@@ -17,7 +17,8 @@ namespace HiddenSound.API.Areas.Shared.Repositories
 
         public void UpdateTransaction(Transaction transaction)
         {
-            throw new NotImplementedException();
+            DbContext.Transactions.Update(transaction);
+            DbContext.SaveChanges();
         }
 
         public void CreateTransaction(Transaction transaction)

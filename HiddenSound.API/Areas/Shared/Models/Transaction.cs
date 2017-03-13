@@ -33,10 +33,8 @@ namespace HiddenSound.API.Areas.Shared.Models
         [NotMapped]
         public string Base64QR { get; set; }
 
-        [JsonIgnore]
         public HiddenSoundUser User { get; set; }
 
-        [JsonIgnore]
         public HiddenSoundUser Vendor { get; set; }
     }
 }

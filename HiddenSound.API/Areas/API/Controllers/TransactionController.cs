@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using HiddenSound.API.Areas.API.Models.Responses;
 using HiddenSound.API.Areas.API.Services;
 using HiddenSound.API.Areas.Shared.Models;
 using HiddenSound.API.Areas.Shared.Repositories;
+using HiddenSound.API.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HiddenSound.API.Areas.API.Controllers
@@ -19,6 +22,8 @@ namespace HiddenSound.API.Areas.API.Controllers
 
         public ITransactionRepository TransactionRepository { get; set; }
 
+        public UserManager<HiddenSoundUser> UserManager { get; set; }
+
         [HttpGet("[action]")]
         [Authorize("Api")]
         public ActionResult List()
@@ -29,8 +34,10 @@ namespace HiddenSound.API.Areas.API.Controllers
         [HttpPost("[action]")]
         [Authorize("Api")]
         [ProducesResponseType(typeof(TransactionCreateResponse), 200)]
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
+            var user = await UserManager.GetUserAsync(User);
+
             var salt = new byte[256 / 8];
             using (var rng = RandomNumberGenerator.Create())
             {
@@ -46,8 +53,8 @@ namespace HiddenSound.API.Areas.API.Controllers
                 Base64QR = qrCode,
                 ExpiresOn = DateTime.UtcNow.AddSeconds(5 * 60),
                 Status = TransactionStatus.Pending,
-                UserId = Guid.NewGuid(),
-                VendorId = Guid.NewGuid()
+                UserId = user.Id,
+                VendorId = user.Id
             };
 
             TransactionRepository.CreateTransaction(transaction);
@@ -58,6 +65,46 @@ namespace HiddenSound.API.Areas.API.Controllers
                 Base64QR = qrCode
             };
             return Json(response);
+        }
+
+        [HttpPost("[action]")]
+        [Authorize("Application")]
+        public async Task<ActionResult> Approve(string authorizationCode)
+        {
+            var user = await UserManager.GetUserAsync(User);
+
+            var transaction = TransactionRepository.GetTransaction(authorizationCode);
+
+            if (transaction == null || transaction.UserId != user.Id)
+            {
+                return BadRequest();
+            }
+
+            transaction.Status = TransactionStatus.Authorized;
+
+            TransactionRepository.UpdateTransaction(transaction);
+
+            return Ok();
+        }
+
+        [HttpPost("[action]")]
+        [Authorize("Application")]
+        public async Task<ActionResult> Decline(string authorizationCode)
+        {
+            var user = await UserManager.GetUserAsync(User);
+
+            var transaction = TransactionRepository.GetTransaction(authorizationCode);
+
+            if (transaction.UserId != user.Id)
+            {
+                return BadRequest();
+            }
+
+            transaction.Status = TransactionStatus.Declined;
+
+            TransactionRepository.UpdateTransaction(transaction);
+
+            return Ok();
         }
 
         [HttpGet("[action]")]
