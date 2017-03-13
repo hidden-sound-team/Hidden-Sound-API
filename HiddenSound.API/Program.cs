@@ -10,6 +10,8 @@ namespace HiddenSound.API
         public static void Main(string[] args)
         {
             var host = new WebHostBuilder()
+                .CaptureStartupErrors(true)
+                .UseSetting("detailedErrors", "true")
                 .UseKestrel(c => c.AddServerHeader = false)
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
