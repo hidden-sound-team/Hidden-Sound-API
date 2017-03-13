@@ -39,7 +39,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
                 Username = user.UserName,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Username = user.UserName
+                Email = user.Email
             };
 
             return Ok(response);
