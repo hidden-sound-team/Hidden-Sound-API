@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using HiddenSound.API.Areas.API.Models;
 using HiddenSound.API.Areas.API.Models.Responses;
 using HiddenSound.API.Areas.API.Services;
 using HiddenSound.API.Areas.Shared.Models;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace HiddenSound.API.Areas.API.Controllers
 {
@@ -45,7 +47,16 @@ namespace HiddenSound.API.Areas.API.Controllers
             }
 
             var authorizationCode = Convert.ToBase64String(salt);
-            var qrCode = QRService.Create(authorizationCode);
+
+            var qrContents = new QRCodeContents()
+            {
+                authorizationCode = authorizationCode,
+                applicationName = "Hidden Sound Front-end"
+            };
+
+            var json = JsonConvert.SerializeObject(qrContents);
+
+            var qrCode = QRService.Create(json);
 
             var transaction = new Transaction
             {
