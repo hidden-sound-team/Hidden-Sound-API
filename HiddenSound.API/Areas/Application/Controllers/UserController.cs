@@ -28,20 +28,53 @@ namespace HiddenSound.API.Areas.Application.Controllers
 
         public IOptions<AppSettingsConfig> AppSettings { get; set; }
 
-        [HttpGet("[action]")]
+        [HttpGet("Info")]
         [Authorize("Application")]
         [ProducesResponseType(typeof(UserInfoResponse), 200)]
-        public async Task<IActionResult> Info()
+        public async Task<IActionResult> InfoGet()
         {
             var user = await UserManager.GetUserAsync(User);
             var response = new UserInfoResponse
             {
                 Email = user.Email,
                 FirstName = user.FirstName,
-                LastName = user.LastName
+                LastName = user.LastName,
+                Username = user.UserName
             };
 
             return Ok(response);
+        }
+
+        [HttpPut("Info")]
+        [Authorize("Application")]
+        [ProducesResponseType(typeof(UserInfoResponse), 200)]
+        public async Task<IActionResult> InfoPut([FromForm] UserInfoPutRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await UserManager.GetUserAsync(User);
+                user.FirstName = request.FirstName;
+                user.LastName = request.LastName;
+
+                var result = await UserManager.UpdateAsync(user);
+
+                if (!result.Succeeded)
+                {
+                    result.AddErrors(ModelState);
+                    BadRequest(ModelState);
+                }
+
+                var response = new UserInfoResponse
+                {
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Username = user.UserName
+                };
+                return Ok(response);
+            }
+
+            return BadRequest(ModelState);
         }
 
         [HttpPost("[action]")]

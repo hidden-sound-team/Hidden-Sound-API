@@ -18,7 +18,7 @@ namespace HiddenSound.API.Areas.Application.Models.Requests
 
         [Required]
         [DataType(DataType.Password)]
-        [Compare("Password")]
+        [Compare("NewPassword")]
         public string ConfirmNewPassword { get; set; }
     }
 }
