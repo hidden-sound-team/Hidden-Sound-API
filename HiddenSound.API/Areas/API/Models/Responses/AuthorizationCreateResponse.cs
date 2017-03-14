@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace HiddenSound.API.Areas.API.Models.Responses
 {
-    public class TransactionCreateResponse
+    public class AuthorizationCreateResponse
     {
         public string AuthorizationCode { get; set; }
 

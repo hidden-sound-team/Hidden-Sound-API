@@ -18,7 +18,7 @@ namespace HiddenSound.API
         {
             builder.RegisterModule<Areas.Application.Module>();
 
-            builder.RegisterType<TransactionRepository>().As<ITransactionRepository>().PropertiesAutowired();
+            builder.RegisterType<AuthorizationRepository>().As<IAuthorizationRepository>().PropertiesAutowired();
             builder.RegisterType<DeviceRepository>().As<IDeviceRepository>().PropertiesAutowired();
 
             builder.RegisterType<QRService>().As<IQRService>().PropertiesAutowired();

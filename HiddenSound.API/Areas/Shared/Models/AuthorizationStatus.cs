@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace HiddenSound.API.Areas.Shared.Models
 {
-    public enum TransactionStatus
+    public enum AuthorizationStatus
     {
         Pending = 0,
 
-        Authorized = 1,
+        Approved = 1,
 
         Declined = 2,
 

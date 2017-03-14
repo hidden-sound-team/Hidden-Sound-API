@@ -95,10 +95,12 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
         [Consumes("application/x-www-form-urlencoded")]
         public async Task<IActionResult> Token([FromBody] OpenIdConnectRequest request)
         {
+            var application = await ApplicationManager.FindByClientIdAsync(request.ClientId, HttpContext.RequestAborted);
+
             if (request.IsAuthorizationCodeGrantType())
             {
                 var info = await HttpContext.Authentication.GetAuthenticateInfoAsync(OpenIdConnectServerDefaults.AuthenticationScheme);
-
+                
                 var user = await UserManager.GetUserAsync(info.Principal);
                 if (user == null)
                 {
@@ -185,8 +187,9 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
                 var principal = await SignInManager.CreateUserPrincipalAsync(user);
                 principal.AddClaim("application", "true", ClaimValueTypes.Boolean);
                 principal.AddClaim("api", "true", ClaimValueTypes.Boolean);
-                var ticket = CreateTicket(request, principal);
+                principal.AddClaim(CustomClaimTypes.ApplicationId, application.Id.ToString(), ClaimValueTypes.String);
                 
+                var ticket = CreateTicket(request, principal);
 
                 return SignIn(ticket.Principal, ticket.Properties, ticket.AuthenticationScheme);
             }

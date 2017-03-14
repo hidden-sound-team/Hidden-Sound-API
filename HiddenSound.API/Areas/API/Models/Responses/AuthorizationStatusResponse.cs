@@ -4,8 +4,8 @@ using HiddenSound.API.Areas.Shared.Models;
 
 namespace HiddenSound.API.Areas.API.Models.Responses
 {
-    public class TransactionStatusResponse
+    public class AuthorizationStatusResponse
     {
-        public TransactionStatus Status { get; set; }
+        public AuthorizationStatus Status { get; set; }
     }
 }

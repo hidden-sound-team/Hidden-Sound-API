@@ -23,7 +23,7 @@ namespace HiddenSound.API
 {
     public class HiddenSoundDbContext : IdentityDbContext<HiddenSoundUser, HiddenSoundRole, Guid>
     {
-        public virtual DbSet<Transaction> Transactions { get; set; }
+        public virtual DbSet<Authorization> Authorizations { get; set; }
 
         public virtual DbSet<Device> Devices { get; set; }
 
@@ -114,9 +114,9 @@ namespace HiddenSound.API
                 entity.Property(e => e.Id).HasDefaultValueSql("newsequentialid()");
             });
 
-            builder.Entity<Transaction>(entity =>
+            builder.Entity<Authorization>(entity =>
             {
-                entity.ToTable("Transaction");
+                entity.ToTable("Authorization");
                 entity.Property(e => e.Id).HasDefaultValueSql("newsequentialid()");
             });
 

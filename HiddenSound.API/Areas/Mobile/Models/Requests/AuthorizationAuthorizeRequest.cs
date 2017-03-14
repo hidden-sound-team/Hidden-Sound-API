@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace HiddenSound.API.Areas.Mobile.Models.Requests
 {
-    public class TransactionAuthorizeRequest
+    public class AuthorizationAuthorizeRequest
     {
         public string AuthorizationCode { get; set; }
 
