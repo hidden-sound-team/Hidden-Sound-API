@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using HiddenSound.API.Areas.Shared.Models;
 using HiddenSound.API.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace HiddenSound.API.Areas.Shared.Repositories
 {
@@ -11,16 +13,25 @@ namespace HiddenSound.API.Areas.Shared.Repositories
     {
         public HiddenSoundDbContext HiddenSoundDbContext { get; set; }
 
-        public List<Device> GetDevices(HiddenSoundUser user)
+        public Task<List<Device>> GetDevicesAsync(HiddenSoundUser user, CancellationToken cancellationToken)
         {
-            return HiddenSoundDbContext.Devices.Where(d => d.UserId == user.Id).ToList();
+            return HiddenSoundDbContext.Devices.Where(d => d.UserId == user.Id).ToListAsync(cancellationToken);
         }
 
-        public bool HasDevice(HiddenSoundUser user, string imei)
+        public Task AddDeviceAsync(Device device, CancellationToken cancellationToken)
         {
-            return
-                HiddenSoundDbContext.Devices.Any(
-                    d => d.UserId == user.Id && string.Equals(d.IMEI, imei, StringComparison.OrdinalIgnoreCase));
+            HiddenSoundDbContext.Devices.Add(device);
+            return HiddenSoundDbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        public Task<Device> GetDeviceAsync(HiddenSoundUser user, string imei, CancellationToken cancellationToken)
+        {
+            return HiddenSoundDbContext.Devices.FirstOrDefaultAsync(d => d.UserId == user.Id && string.Equals(d.IMEI, imei, StringComparison.OrdinalIgnoreCase), cancellationToken);
+        }
+
+        public Task<Device> GetDeviceAsync(string imei, CancellationToken cancellationToken)
+        {
+            return HiddenSoundDbContext.Devices.FirstOrDefaultAsync(d => string.Equals(d.IMEI, imei, StringComparison.OrdinalIgnoreCase), cancellationToken);
         }
     }
 }

@@ -8,5 +8,7 @@ namespace HiddenSound.API.Areas.API.Models.Responses
         public string AuthorizationCode { get; set; }
 
         public string Base64QR { get; set; }
+
+        public DateTime ExpiresOn { get; set; }
     }
 }

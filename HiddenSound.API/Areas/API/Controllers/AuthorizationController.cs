@@ -7,6 +7,7 @@ using HiddenSound.API.Areas.API.Models.Responses;
 using HiddenSound.API.Areas.API.Services;
 using HiddenSound.API.Areas.Shared.Models;
 using HiddenSound.API.Areas.Shared.Repositories;
+using HiddenSound.API.Extensions;
 using HiddenSound.API.Identity;
 using HiddenSound.API.OpenIddict;
 using Microsoft.AspNetCore.Authorization;
@@ -36,6 +37,20 @@ namespace HiddenSound.API.Areas.API.Controllers
         public async Task<ActionResult> Create()
         {
             var user = await UserManager.GetUserAsync(User);
+
+            if (user == null)
+            {
+                ModelState.AddModelError("User", "The user is invalid");
+                return BadRequest(ModelState);
+            }
+
+            var application = await ApplicationManager.GetApplicationAync(User, HttpContext.RequestAborted);
+
+            if (application == null)
+            {
+                ModelState.AddModelError("Application", "The application is invalid");
+                return BadRequest(ModelState);
+            }
             
             var salt = new byte[256 / 8];
             using (var rng = RandomNumberGenerator.Create())
@@ -48,7 +63,7 @@ namespace HiddenSound.API.Areas.API.Controllers
             var qrContents = new QRCodeContents()
             {
                 authorizationCode = authorizationCode,
-                applicationName = "Hidden Sound Front-end"
+                applicationName = application.DisplayName
             };
 
             var json = JsonConvert.SerializeObject(qrContents);
@@ -61,7 +76,7 @@ namespace HiddenSound.API.Areas.API.Controllers
                 ExpiresOn = DateTime.UtcNow.AddSeconds(5 * 60),
                 Status = AuthorizationStatus.Pending,
                 UserId = user.Id,
-                //VendorId = user.Id
+                ApplicationId = application.Id
             };
 
             AuthorizationRepository.CreateAuthorization(authorization);
@@ -69,94 +84,46 @@ namespace HiddenSound.API.Areas.API.Controllers
             var response = new AuthorizationCreateResponse
             {
                 AuthorizationCode = authorizationCode,
-                Base64QR = qrCode
-            };
-            return Json(response);
-        }
-
-        [HttpPost("[action]")]
-        [Authorize("Application")]
-        public async Task<ActionResult> Approve(string authorizationCode)
-        {
-            var user = await UserManager.GetUserAsync(User);
-
-            var authorization = AuthorizationRepository.GetAuthorization(authorizationCode);
-
-            if (authorization == null || authorization.UserId != user.Id)
-            {
-                return BadRequest();
-            }
-
-            authorization.Status = AuthorizationStatus.Approved;
-
-            AuthorizationRepository.UpdateAuthorization(authorization);
-
-            return Ok();
-        }
-
-        [HttpPost("[action]")]
-        [Authorize("Application")]
-        public async Task<ActionResult> Decline(string authorizationCode)
-        {
-            var user = await UserManager.GetUserAsync(User);
-
-            var authorization = AuthorizationRepository.GetAuthorization(authorizationCode);
-
-            if (authorization.UserId != user.Id)
-            {
-                return BadRequest();
-            }
-
-            authorization.Status = AuthorizationStatus.Declined;
-
-            AuthorizationRepository.UpdateAuthorization(authorization);
-
-            return Ok();
-        }
-
-        [HttpGet("[action]")]
-        [Authorize("Api")]
-        [ProducesResponseType(typeof(AuthorizationStatusResponse), 200)]
-        [ProducesResponseType(typeof(AuthorizationStatusResponse), 404)]
-        public ActionResult Status([FromQuery] string authorizationCode)
-        {
-            var authorization = AuthorizationRepository.GetAuthorization(authorizationCode);
-
-            if (authorization == null)
-            {
-                return NotFound();
-            }
-
-            // we won't do any updating here. expired date is already stored
-            // and we can use batch sql update job to remove expired authorizations
-            if (DateTime.UtcNow >= authorization.ExpiresOn)
-            {
-                authorization.Status = AuthorizationStatus.Expired;
-            }
-
-            var response = new AuthorizationStatusResponse
-            {
-                Status = authorization.Status
+                Base64QR = qrCode,
+                ExpiresOn = authorization.ExpiresOn
             };
             return Ok(response);
         }
 
         [HttpGet("[action]")]
         [Authorize("Api")]
-        [ProducesResponseType(typeof(Authorization), 200)]
-        [ProducesResponseType(typeof(AuthorizationStatusResponse), 404)]
-        public ActionResult Info([FromQuery] string authorizationCode)
+        [ProducesResponseType(typeof(AuthorizationInfoResponse), 200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> Info([FromQuery] string authorizationCode, [FromQuery] bool includeQrImage = false)
         {
-            var authorization = AuthorizationRepository.GetAuthorization(authorizationCode);
+            var application = await ApplicationManager.GetApplicationAync(User, HttpContext.RequestAborted);
+
+            if (application == null)
+            {
+                ModelState.AddModelError("Application", "The application is invalid");
+                return BadRequest(ModelState);
+            }
+
+            var authorization = await AuthorizationRepository.GetAuthorizationAsync(application.Id, authorizationCode, HttpContext.RequestAborted);
 
             if (authorization == null)
             {
                 return NotFound();
             }
 
-            // transaction.Base64QR = QRService.Create(transaction.AuthorizationCode);
+            if (DateTime.UtcNow >= authorization.ExpiresOn)
+            {
+                authorization.Status = AuthorizationStatus.Expired;
+            }
 
-            return Json(authorization);
+            var response = new AuthorizationInfoResponse()
+            {
+                Base64QR = includeQrImage ? QRService.Create(authorization.Code) : null,
+                Status =  authorization.Status
+            };
+
+            return Ok(response);
         }
     }
 }

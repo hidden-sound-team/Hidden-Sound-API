@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using HiddenSound.API.Areas.Shared.Models;
 
@@ -11,6 +12,8 @@ namespace HiddenSound.API.Areas.Shared.Repositories
         List<Authorization> GetAllAuthorizations();
 
         Authorization GetAuthorization(string code);
+
+        Task<Authorization> GetAuthorizationAsync(Guid application, string code, CancellationToken cancellationToken);
 
         void UpdateAuthorization(Authorization authorization);
 

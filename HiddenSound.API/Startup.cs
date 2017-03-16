@@ -69,7 +69,7 @@ namespace HiddenSound.API
             services.AddCors(options =>
             {
                 options.AddPolicy("AnyOrigin", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-                options.AddPolicy("Application", p => p.WithOrigins(Configuration["AppSettings:WebUri"]).AllowAnyMethod().AllowAnyHeader());
+                options.AddPolicy("Application", p => p.WithOrigins(Configuration["AppSettings:WebUri"], Configuration["AppSettings:ApiUri"]).AllowAnyMethod().AllowAnyHeader());
             });
 
             services.AddIdentity<HiddenSoundUser, HiddenSoundRole>(options =>

@@ -10,5 +10,8 @@ namespace HiddenSound.API.Areas.Mobile.Models.Requests
     {
         [Required]
         public string IMEI { get; set; }
+
+        [Required]
+        public string Name { get; set; }
     }
 }
