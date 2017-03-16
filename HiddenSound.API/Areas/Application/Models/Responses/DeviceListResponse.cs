@@ -8,12 +8,12 @@ namespace HiddenSound.API.Areas.Application.Models.Responses
     public class DeviceListResponse
     {
         public List<Device> Devices { get; set; }
-    }
 
-    public class Device
-    {
-        public Guid Id { get; set; }
+        public class Device
+        {
+            public Guid Id { get; set; }
 
-        public string Name { get; set; }
+            public string Name { get; set; }
+        }
     }
 }
