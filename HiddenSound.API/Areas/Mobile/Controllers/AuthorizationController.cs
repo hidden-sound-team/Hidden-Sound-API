@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using HiddenSound.API.Areas.Mobile.Models.Requests;
 using HiddenSound.API.Areas.Shared.Models;
 using HiddenSound.API.Areas.Shared.Repositories;
+using HiddenSound.API.Hubs;
 using HiddenSound.API.Identity;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace HiddenSound.API.Areas.Mobile.Controllers
 {
@@ -22,8 +23,10 @@ namespace HiddenSound.API.Areas.Mobile.Controllers
 
         public IDeviceRepository DeviceRepository { get; set; }
 
+        public IHubContext<AuthorizationHub, IClient> AuthorizationHub { get; set; }
+
         [HttpPost("[action]")]
-        [Authorize("Application")]
+        [Microsoft.AspNetCore.Authorization.Authorize("Application")]
 
         public async Task<IActionResult> Approve([FromBody] AuthorizationAuthorizeRequest request)
         {
@@ -36,7 +39,7 @@ namespace HiddenSound.API.Areas.Mobile.Controllers
         }
 
         [HttpPost("[action]")]
-        [Authorize("Application")]
+        [Microsoft.AspNetCore.Authorization.Authorize("Application")]
         public async Task<IActionResult> Decline([FromBody]AuthorizationAuthorizeRequest request)
         {
             if (ModelState.IsValid)
@@ -75,6 +78,8 @@ namespace HiddenSound.API.Areas.Mobile.Controllers
             authorization.Status = approve ? AuthorizationStatus.Approved : AuthorizationStatus.Declined;
 
             AuthorizationRepository.UpdateAuthorization(authorization);
+
+            AuthorizationHub.Clients.User(user.Id.ToString()).UpdateAuthorization(authorization.Status);
 
             return Ok();
         }

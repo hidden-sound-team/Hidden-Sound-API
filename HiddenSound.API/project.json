@@ -30,7 +30,8 @@
     "Microsoft.Extensions.Logging.Console": "1.1.1",
     "Microsoft.Extensions.Logging.Debug": "1.1.1",
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.1.1",
-    "AspNet.Security.OAuth.Validation": "1.0.0-beta1-final"
+    "AspNet.Security.OAuth.Validation": "1.0.0-beta1-final",
+    "Microsoft.AspNetCore.SignalR.Server": "0.2.0-preview2-22683"
   },
   "tools": {
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.1.0-preview4-final",
