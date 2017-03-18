@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Swagger;
 using AspNet.Security.OpenIdConnect.Primitives;
 using HiddenSound.API.OpenIddict;
+using Newtonsoft.Json;
 
 namespace HiddenSound.API
 {
@@ -34,7 +35,9 @@ namespace HiddenSound.API
 
             if (env.IsDevelopment())
             {
+#pragma warning disable 618
                 builder.AddUserSecrets();
+#pragma warning restore 618
             }
 
             Configuration = builder.Build();
@@ -116,9 +119,13 @@ namespace HiddenSound.API
             });
 
             services.AddMvc(options =>
-            {
-
-            });
+                {
+                
+                })
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                });
 
             services.AddSwaggerGen(c =>
             {
@@ -207,7 +214,7 @@ namespace HiddenSound.API
             });
 
 
-            app.MapWhen(ctx => new[] { "/.well-known", "/Api", "/Mobile", "/OAuth" }.Any(p => ctx.Request.Path.StartsWithSegments(p)), branch =>
+            app.UseWhen(ctx => new[] { "/.well-known", "/Api", "/Mobile", "/OAuth" }.Any(p => ctx.Request.Path.StartsWithSegments(p)), branch =>
             {
                 branch.UseCors("AnyOrigin");
             });

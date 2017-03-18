@@ -38,5 +38,18 @@ namespace HiddenSound.API.Areas.Shared.Repositories
         {
             return DbContext.Authorizations.ToList();
         }
+
+        public Task RemoveAuthorizationsByApplicationAsync(Guid applicationId, CancellationToken cancellationToken)
+        {
+            var authorizations = GetAuthorizationsByApplicationAsync(applicationId, cancellationToken).GetAwaiter().GetResult();
+ 
+            DbContext.Authorizations.RemoveRange(authorizations);
+            return DbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        public Task<List<Authorization>> GetAuthorizationsByApplicationAsync(Guid applicationId, CancellationToken cancellationToken)
+        {
+            return DbContext.Authorizations.Where(a => a.ApplicationId == applicationId).ToListAsync(cancellationToken);
+        }
     }
 }

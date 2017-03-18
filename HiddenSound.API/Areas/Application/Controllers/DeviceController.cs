@@ -13,7 +13,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
 {
     [Area("Application")]
     [Route("Application/[controller]")]
-    public class DevicesController : Controller 
+    public class DeviceController : Controller 
     {
         public UserManager<HiddenSoundUser> UserManager { get; set; }
 

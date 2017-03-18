@@ -173,7 +173,7 @@ namespace HiddenSound.API.Areas.Application.Controllers
 
         [HttpPost("[action]")]
         [Authorize("Application")]
-        public async Task<IActionResult> ChangePassword([FromForm] ChangePasswordRequest request)
+        public async Task<IActionResult> ChangePassword([FromForm] PasswordChangeRequest request)
         {
             if (ModelState.IsValid)
             {

@@ -27,6 +27,8 @@ namespace HiddenSound.API
 
         public virtual DbSet<Device> Devices { get; set; }
 
+        public virtual DbSet<HSOpenIddictApplication> Applications { get; set; }
+
         private static readonly string[] SeedRoles = { "Administrator", "Basic" };
 
         public HiddenSoundDbContext(DbContextOptions<HiddenSoundDbContext> options) : base(options)

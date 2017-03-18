@@ -15,7 +15,7 @@ namespace HiddenSound.API.Areas.Mobile.Controllers
 {
     [Area("Mobile")]
     [Route("Mobile/[controller]")]
-    public class DevicesController : Controller
+    public class DeviceController : Controller
     {
         public UserManager<HiddenSoundUser> UserManager { get; set; }
 
@@ -62,7 +62,7 @@ namespace HiddenSound.API.Areas.Mobile.Controllers
         [Authorize("Application")]
         [ProducesResponseType(typeof(CheckDeviceResponse), 200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> Check([FromBody] CheckDeviceRequest request)
+        public async Task<IActionResult> Check([FromBody] DeviceCheckRequest request)
         {
             if (ModelState.IsValid)
             {

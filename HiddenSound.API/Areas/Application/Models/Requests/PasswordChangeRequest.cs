@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HiddenSound.API.Areas.Application.Models.Requests
 {
-    public class ChangePasswordRequest
+    public class PasswordChangeRequest
     {
         [Required]
         [DataType(DataType.Password)]

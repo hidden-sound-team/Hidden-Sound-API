@@ -4,14 +4,14 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HiddenSound.API.Areas.Application.Models
+namespace HiddenSound.API.Areas.Application.Models.Requests
 {
-    public class ConfirmEmailRequest
+    public class ApplicationCreateRequest
     {
         [Required]
-        public int UserID { get; set; }
+        public string Name { get; set; }
 
         [Required]
-        public string Code { get; set; }
+        public string RedirectUri { get; set; }
     }
 }
