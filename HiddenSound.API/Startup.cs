@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using HiddenSound.API.Configuration;
@@ -65,6 +64,11 @@ namespace HiddenSound.API
 
             services.AddMemoryCache();
             services.AddOptions();
+
+            services.AddSignalR(options =>
+            {
+                options.Hubs.EnableDetailedErrors = true;
+            });
 
             services.AddCors(options =>
             {
@@ -202,14 +206,17 @@ namespace HiddenSound.API
                 branch.UseCors("Application");
             });
 
-            app.UseWhen(ctx => new[] { "/.well-known", "/Api", "/Mobile", "/OAuth" }.Any(p => ctx.Request.Path.StartsWithSegments(p)), branch =>
-           {
-               branch.UseCors("AnyOrigin");
-           });
+
+            app.MapWhen(ctx => new[] { "/.well-known", "/Api", "/Mobile", "/OAuth" }.Any(p => ctx.Request.Path.StartsWithSegments(p)), branch =>
+            {
+                branch.UseCors("AnyOrigin");
+            });
 
             app.UseOAuthValidation();
 
             app.UseOpenIddict();
+
+            app.UseSignalR("/Api/Authorization/signalr");
 
             app.UseMvc(routes =>
             {
