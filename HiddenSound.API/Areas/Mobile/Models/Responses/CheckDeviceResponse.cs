@@ -7,6 +7,10 @@ namespace HiddenSound.API.Areas.Mobile.Models.Responses
 {
     public class CheckDeviceResponse
     {
-        public bool CanLink { get; set; }
+        public bool IsUserDevice { get; set; }
+
+        public bool IsDeviceLinked { get; set; }
+
+        public bool UserHasDevice { get; set; }
     }
 }

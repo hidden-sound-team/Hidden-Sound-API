@@ -28,7 +28,7 @@ namespace HiddenSound.API.Areas.Mobile.Controllers
         [HttpPost("[action]")]
         [Microsoft.AspNetCore.Authorization.Authorize("Application")]
 
-        public async Task<IActionResult> Approve([FromBody] AuthorizationAuthorizeRequest request)
+        public async Task<IActionResult> Approve([FromForm] AuthorizationAuthorizeRequest request)
         {
             if (ModelState.IsValid)
             {
@@ -40,7 +40,7 @@ namespace HiddenSound.API.Areas.Mobile.Controllers
 
         [HttpPost("[action]")]
         [Microsoft.AspNetCore.Authorization.Authorize("Application")]
-        public async Task<IActionResult> Decline([FromBody]AuthorizationAuthorizeRequest request)
+        public async Task<IActionResult> Decline([FromForm] AuthorizationAuthorizeRequest request)
         {
             if (ModelState.IsValid)
             {
