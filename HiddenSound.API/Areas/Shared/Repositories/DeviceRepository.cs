@@ -14,9 +14,9 @@ namespace HiddenSound.API.Areas.Shared.Repositories
     {
         public HiddenSoundDbContext HiddenSoundDbContext { get; set; }
 
-        public Task<List<Device>> GetDevicesAsync(HiddenSoundUser user, CancellationToken cancellationToken)
+        public Task<List<Device>> GetDevicesAsync(Guid userId, CancellationToken cancellationToken)
         {
-            return HiddenSoundDbContext.Devices.Where(d => d.UserId == user.Id).ToListAsync(cancellationToken);
+            return HiddenSoundDbContext.Devices.Where(d => d.UserId == userId).ToListAsync(cancellationToken);
         }
 
         public Task AddDeviceAsync(Device device, CancellationToken cancellationToken)
@@ -25,14 +25,25 @@ namespace HiddenSound.API.Areas.Shared.Repositories
             return HiddenSoundDbContext.SaveChangesAsync(cancellationToken);
         }
 
-        public Task<Device> GetDeviceAsync(HiddenSoundUser user, string imei, CancellationToken cancellationToken)
+        public Task<Device> GetDeviceAsync(Guid userId, string imei, CancellationToken cancellationToken)
         {
-            return HiddenSoundDbContext.Devices.FirstOrDefaultAsync(d => d.UserId == user.Id && Crypto.VerifyHashedPassword(d.IMEI, imei), cancellationToken);
+            return HiddenSoundDbContext.Devices.FirstOrDefaultAsync(d => d.UserId == userId && Crypto.VerifyHashedPassword(d.IMEI, imei), cancellationToken);
         }
 
         public Task<Device> GetDeviceAsync(string imei, CancellationToken cancellationToken)
         {
             return HiddenSoundDbContext.Devices.FirstOrDefaultAsync(d => Crypto.VerifyHashedPassword(d.IMEI, imei), cancellationToken);
+        }
+
+        public Task RemoveDeviceAsync(Device device, CancellationToken cancellationToken)
+        {
+            HiddenSoundDbContext.Devices.Remove(device);
+            return HiddenSoundDbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        public Task<Device> GetDeviceByIdAsync(Guid userId, Guid deviceGuid, CancellationToken cancellationToken)
+        {
+            return HiddenSoundDbContext.Devices.FirstOrDefaultAsync(d => d.UserId == userId && deviceGuid == d.Id, cancellationToken);
         }
     }
 }

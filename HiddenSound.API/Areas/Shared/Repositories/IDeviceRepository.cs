@@ -10,12 +10,16 @@ namespace HiddenSound.API.Areas.Shared.Repositories
 {
     public interface IDeviceRepository
     {
-        Task<List<Device>> GetDevicesAsync(HiddenSoundUser user, CancellationToken cancellationToken);
+        Task<List<Device>> GetDevicesAsync(Guid userId, CancellationToken cancellationToken);
 
         Task AddDeviceAsync(Device device, CancellationToken cancellationToken);
 
-        Task<Device> GetDeviceAsync(HiddenSoundUser user, string imei, CancellationToken cancellationToken);
+        Task<Device> GetDeviceAsync(Guid userId, string imei, CancellationToken cancellationToken);
+
+        Task<Device> GetDeviceByIdAsync(Guid userId, Guid deviceId, CancellationToken cancellationToken);
 
         Task<Device> GetDeviceAsync(string imei, CancellationToken cancellationToken);
+
+        Task RemoveDeviceAsync(Device device, CancellationToken cancellationToken);
     }
 }

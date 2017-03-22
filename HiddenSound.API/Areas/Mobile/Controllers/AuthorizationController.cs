@@ -67,7 +67,7 @@ namespace HiddenSound.API.Areas.Mobile.Controllers
                 return BadRequest(ModelState);
             }
 
-            var device = await DeviceRepository.GetDeviceAsync(user, request.IMEI, HttpContext.RequestAborted);
+            var device = await DeviceRepository.GetDeviceAsync(user.Id, request.IMEI, HttpContext.RequestAborted);
 
             if (device == null)
             {

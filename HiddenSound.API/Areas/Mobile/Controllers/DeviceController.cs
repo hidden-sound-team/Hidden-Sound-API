@@ -31,10 +31,10 @@ namespace HiddenSound.API.Areas.Mobile.Controllers
             if (ModelState.IsValid)
             {
                 var user = await UserManager.GetUserAsync(User);
-
-                if (user == null)
+                
+                if ((await DeviceRepository.GetDevicesAsync(user.Id, HttpContext.RequestAborted)).Count > 0)
                 {
-                    ModelState.AddModelError("User", "The user is invalid");
+                    ModelState.AddModelError("Device", "The user already has a device linked");
                     return BadRequest(ModelState);
                 }
 
@@ -71,9 +71,9 @@ namespace HiddenSound.API.Areas.Mobile.Controllers
                 
                 var response = new CheckDeviceResponse
                 {
-                    IsUserDevice = await DeviceRepository.GetDeviceAsync(user, request.IMEI, HttpContext.RequestAborted) != null,
+                    IsUserDevice = await DeviceRepository.GetDeviceAsync(user.Id, request.IMEI, HttpContext.RequestAborted) != null,
                     IsDeviceLinked = await DeviceRepository.GetDeviceAsync(request.IMEI, HttpContext.RequestAborted) != null,
-                    UserHasDevice = (await DeviceRepository.GetDevicesAsync(user, HttpContext.RequestAborted)).Count > 0
+                    UserHasDevice = (await DeviceRepository.GetDevicesAsync(user.Id, HttpContext.RequestAborted)).Count > 0
                 };
 
                 return Ok(response);

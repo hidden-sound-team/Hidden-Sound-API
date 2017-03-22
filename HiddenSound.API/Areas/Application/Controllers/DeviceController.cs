@@ -33,11 +33,11 @@ namespace HiddenSound.API.Areas.Application.Controllers
                 return BadRequest(ModelState);
             }
 
-            var devices = await DeviceRepository.GetDevicesAsync(user, HttpContext.RequestAborted);
+            var devices = await DeviceRepository.GetDevicesAsync(user.Id, HttpContext.RequestAborted);
 
             var deviceListResponse = new DeviceListResponse()
             {
-                Devices = devices.Select(d => new DeviceListResponse.Device()
+                Devices = devices.Select(d => new DeviceListResponse.Device
                 {
                     Id = d.Id,
                     Name = d.Name
@@ -45,6 +45,32 @@ namespace HiddenSound.API.Areas.Application.Controllers
             };
 
             return Ok(deviceListResponse);
+        }
+
+        [HttpDelete("{deviceId}")]
+        [Authorize("Application")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> Delete([FromRoute] string deviceId)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await UserManager.GetUserAsync(User);
+
+                var device = await DeviceRepository.GetDeviceByIdAsync(user.Id, new Guid(deviceId), HttpContext.RequestAborted);
+
+                if (device == null)
+                {
+                    ModelState.AddModelError("Device", "The device is invalid");
+                    return BadRequest(ModelState);
+                }
+
+                await DeviceRepository.RemoveDeviceAsync(device, HttpContext.RequestAborted);
+
+                return Ok();
+            }
+
+            return BadRequest(ModelState);
         }
     }
 }
