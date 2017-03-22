@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CryptoHelper;
 using HiddenSound.API.Areas.Shared.Models;
 using HiddenSound.API.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -26,12 +27,12 @@ namespace HiddenSound.API.Areas.Shared.Repositories
 
         public Task<Device> GetDeviceAsync(HiddenSoundUser user, string imei, CancellationToken cancellationToken)
         {
-            return HiddenSoundDbContext.Devices.FirstOrDefaultAsync(d => d.UserId == user.Id && string.Equals(d.IMEI, imei, StringComparison.OrdinalIgnoreCase), cancellationToken);
+            return HiddenSoundDbContext.Devices.FirstOrDefaultAsync(d => d.UserId == user.Id && Crypto.VerifyHashedPassword(d.IMEI, imei), cancellationToken);
         }
 
         public Task<Device> GetDeviceAsync(string imei, CancellationToken cancellationToken)
         {
-            return HiddenSoundDbContext.Devices.FirstOrDefaultAsync(d => string.Equals(d.IMEI, imei, StringComparison.OrdinalIgnoreCase), cancellationToken);
+            return HiddenSoundDbContext.Devices.FirstOrDefaultAsync(d => Crypto.VerifyHashedPassword(d.IMEI, imei), cancellationToken);
         }
     }
 }

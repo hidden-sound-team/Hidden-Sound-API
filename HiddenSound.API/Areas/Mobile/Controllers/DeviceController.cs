@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CryptoHelper;
 using HiddenSound.API.Areas.Mobile.Models.Requests;
 using HiddenSound.API.Areas.Mobile.Models.Responses;
 using HiddenSound.API.Areas.Shared.Models;
@@ -25,7 +26,7 @@ namespace HiddenSound.API.Areas.Mobile.Controllers
         [Authorize("Application")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> Link([FromBody] DeviceLinkRequest request)
+        public async Task<IActionResult> Link([FromForm] DeviceLinkRequest request)
         {
             if (ModelState.IsValid)
             {
@@ -45,7 +46,7 @@ namespace HiddenSound.API.Areas.Mobile.Controllers
 
                 var device = new Device
                 {
-                    IMEI = request.IMEI,
+                    IMEI = Crypto.HashPassword(request.IMEI),
                     Name = request.Name,
                     UserId = user.Id
                 };
@@ -62,13 +63,17 @@ namespace HiddenSound.API.Areas.Mobile.Controllers
         [Authorize("Application")]
         [ProducesResponseType(typeof(CheckDeviceResponse), 200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> Check([FromBody] DeviceCheckRequest request)
+        public async Task<IActionResult> Check([FromForm] DeviceCheckRequest request)
         {
             if (ModelState.IsValid)
             {
+                var user = await UserManager.GetUserAsync(User);
+
+                var userDevices = await DeviceRepository.GetDevicesAsync(user, HttpContext.RequestAborted);
+
                 var response = new CheckDeviceResponse
                 {
-                    CanLink = await DeviceRepository.GetDeviceAsync(request.IMEI, HttpContext.RequestAborted) == null
+                    CanLink = userDevices.Count == 0 && await DeviceRepository.GetDeviceAsync(request.IMEI, HttpContext.RequestAborted) == null
                 };
 
                 return Ok(response);
