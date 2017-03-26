@@ -56,8 +56,10 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
                 new Dictionary<string, string>()
                 {
                     { "application", WebUtility.UrlEncode(application.DisplayName) },
+                    //{ "client_id", WebUtility.UrlEncode(request.ClientId) },
+                    { "redirect_uri", WebUtility.UrlEncode(application.RedirectUri) },
                     { "request_id", WebUtility.UrlEncode(request.RequestId) },
-                    { "scope", WebUtility.UrlEncode(request.Scope) ?? string.Empty }
+                    //{ "scope", WebUtility.UrlEncode(request.Scope) ?? string.Empty }
                 });
 
             return Redirect(redirectUri);
@@ -65,7 +67,7 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
 
         [Authorize]
         [HttpPost(OAuthConstants.AuthorizeRoute)]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> AuthorizePost([FromBody] OpenIdConnectRequest request)
         {
             if (!string.IsNullOrEmpty(HttpContext.Request.Form["submit.Deny"]))

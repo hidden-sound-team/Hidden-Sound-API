@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
+using AspNet.Security.OAuth.Validation;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using HiddenSound.API.Configuration;
@@ -19,6 +21,7 @@ using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Swagger;
 using AspNet.Security.OpenIdConnect.Primitives;
 using HiddenSound.API.OpenIddict;
+using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 
 namespace HiddenSound.API
@@ -110,6 +113,7 @@ namespace HiddenSound.API
                 .AllowPasswordFlow()
                 .AllowRefreshTokenFlow()
                 .EnableRequestCaching()
+                
                 .DisableHttpsRequirement();
 
             services.AddAuthorization(c =>
@@ -213,13 +217,26 @@ namespace HiddenSound.API
                 branch.UseCors("Application");
             });
 
-
             app.UseWhen(ctx => new[] { "/.well-known", "/Api", "/Mobile", "/OAuth" }.Any(p => ctx.Request.Path.StartsWithSegments(p)), branch =>
             {
                 branch.UseCors("AnyOrigin");
             });
 
-            app.UseOAuthValidation();
+            app.UseOAuthValidation(options =>
+            {
+                options.Events = new OAuthValidationEvents
+                {
+                    OnRetrieveToken = context =>
+                    {
+                        if (context.Request.Query.ContainsKey("access_token"))
+                        {
+                            context.Token = context.Request.Query["access_token"];
+                        }
+
+                        return Task.FromResult(0);
+                    }
+                };
+            });
 
             app.UseOpenIddict();
 
