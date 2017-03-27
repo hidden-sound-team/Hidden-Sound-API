@@ -203,6 +203,19 @@ namespace HiddenSound.API
 
                 await applicationMananger.CreateAsync(application, databaseSeed.ApplicationConfidentialClientId, cancellationToken);
             }
+
+            if (await applicationMananger.FindByClientIdAsync(databaseSeed.VendorClientId, cancellationToken) == null)
+            {
+                var application = new HSOpenIddictApplication
+                {
+                    ClientId = databaseSeed.VendorClientId,
+                    DisplayName = "Vendor Test Site",
+                    RedirectUri = databaseSeed.VendorRedirectUri,
+                    UserId = createdUser.Id
+                };
+
+                await applicationMananger.CreateAsync(application, databaseSeed.VendorClientSecret, cancellationToken);
+            }
         }
     }
 }

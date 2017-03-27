@@ -18,5 +18,11 @@ namespace HiddenSound.API.Configuration
         public string ApplicationConfidentialClientSecret { get; set; }
 
         public string ApplicationRedirectUri { get; set; }
+
+        public string VendorClientId { get; set; }
+
+        public string VendorClientSecret { get; set; }
+
+        public string VendorRedirectUri { get; set; }
     }
 }

@@ -38,11 +38,11 @@ namespace HiddenSound.API.Areas.Mobile.Controllers
                     return BadRequest(ModelState);
                 }
 
-                if (await DeviceRepository.GetDeviceAsync(request.IMEI, HttpContext.RequestAborted) != null)
-                {
-                    ModelState.AddModelError("Device", "The device is already linked");
-                    return BadRequest(ModelState);
-                }
+                //if (await DeviceRepository.GetDeviceAsync(request.IMEI, HttpContext.RequestAborted) != null)
+                //{
+                //    ModelState.AddModelError("Device", "The device is already linked");
+                //    return BadRequest(ModelState);
+                //}
 
                 var device = new Device
                 {

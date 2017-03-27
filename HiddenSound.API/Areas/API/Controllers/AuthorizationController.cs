@@ -85,8 +85,10 @@ namespace HiddenSound.API.Areas.API.Controllers
             {
                 AuthorizationCode = authorizationCode,
                 Base64QR = qrCode,
-                ExpiresOn = authorization.ExpiresOn
+                ExpiresOn = authorization.ExpiresOn,
+                Status = authorization.Status
             };
+
             return Ok(response);
         }
 
