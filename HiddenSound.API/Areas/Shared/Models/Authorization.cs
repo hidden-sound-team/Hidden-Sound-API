@@ -25,14 +25,17 @@ namespace HiddenSound.API.Areas.Shared.Models
         [Required]
         public DateTime ExpiresOn { get; set; }
 
+        [Required]
+        public DateTime CreatedOn { get; set; }
+
         [ForeignKey("User")]
         public Guid? UserId { get; set; }
         
         [ForeignKey("Application")]
         public Guid? ApplicationId { get; set; }
 
-        public HiddenSoundUser User { get; set; }
+        public virtual HiddenSoundUser User { get; set; }
 
-        public HSOpenIddictApplication Application { get; set; }
+        public virtual HSOpenIddictApplication Application { get; set; }
     }
 }

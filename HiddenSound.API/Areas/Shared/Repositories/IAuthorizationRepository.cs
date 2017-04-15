@@ -22,5 +22,7 @@ namespace HiddenSound.API.Areas.Shared.Repositories
         Task RemoveAuthorizationsByApplicationAsync(Guid applicationId, CancellationToken cancellationToken);
 
         Task<List<Authorization>> GetAuthorizationsByApplicationAsync(Guid applicationId, CancellationToken cancellationToken);
+
+        Task<List<Authorization>> GetAuthorizationsByUserAsync(Guid userId, CancellationToken cancellationToken);
     }
 }

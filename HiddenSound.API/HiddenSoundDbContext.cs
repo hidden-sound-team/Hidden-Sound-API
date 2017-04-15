@@ -44,7 +44,6 @@ namespace HiddenSound.API
             {
                 entity.ToTable("User", "Security");
                 entity.Property(e => e.Id).HasColumnName("UserId").HasDefaultValueSql("newsequentialid()");
-
             });
 
             builder.Entity<HiddenSoundRole>(entity =>
@@ -204,14 +203,30 @@ namespace HiddenSound.API
                 await applicationMananger.CreateAsync(application, databaseSeed.ApplicationConfidentialClientId, cancellationToken);
             }
 
+            if (await userManager.FindByNameAsync(databaseSeed.VendorUsername) == null)
+            {
+                var user = new HiddenSoundUser
+                {
+                    EmailConfirmed = true,
+                    UserName = databaseSeed.VendorUsername,
+                    Email = databaseSeed.VendorUsername,
+                    FirstName = "Kurt",
+                    LastName = "Allen"
+                };
+
+                await userManager.CreateAsync(user, databaseSeed.VendorPassword);
+            }
+
+            var vendorUser = await userManager.FindByNameAsync(databaseSeed.VendorUsername);
+
             if (await applicationMananger.FindByClientIdAsync(databaseSeed.VendorClientId, cancellationToken) == null)
             {
                 var application = new HSOpenIddictApplication
                 {
                     ClientId = databaseSeed.VendorClientId,
-                    DisplayName = "Vendor Test Site",
+                    DisplayName = "Board Shop",
                     RedirectUri = databaseSeed.VendorRedirectUri,
-                    UserId = createdUser.Id
+                    UserId = vendorUser.Id
                 };
 
                 await applicationMananger.CreateAsync(application, databaseSeed.VendorClientSecret, cancellationToken);

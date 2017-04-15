@@ -24,5 +24,9 @@ namespace HiddenSound.API.Configuration
         public string VendorClientSecret { get; set; }
 
         public string VendorRedirectUri { get; set; }
+
+        public string VendorUsername { get; set; }
+
+        public string VendorPassword { get; set; }
     }
 }

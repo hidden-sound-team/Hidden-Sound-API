@@ -74,6 +74,7 @@ namespace HiddenSound.API.Areas.API.Controllers
             {
                 Code = authorizationCode,
                 ExpiresOn = DateTime.UtcNow.AddSeconds(5 * 60),
+                CreatedOn = DateTime.UtcNow,
                 Status = AuthorizationStatus.Pending,
                 UserId = user.Id,
                 ApplicationId = application.Id
@@ -86,6 +87,7 @@ namespace HiddenSound.API.Areas.API.Controllers
                 AuthorizationCode = authorizationCode,
                 Base64QR = qrCode,
                 ExpiresOn = authorization.ExpiresOn,
+                CreatedOn = authorization.CreatedOn,
                 Status = authorization.Status
             };
 

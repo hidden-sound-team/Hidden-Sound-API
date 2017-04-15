@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using HiddenSound.API.Areas.Shared.Models;
+using HiddenSound.API.OpenIddict;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace HiddenSound.API.Areas.Shared.Repositories
@@ -50,6 +52,20 @@ namespace HiddenSound.API.Areas.Shared.Repositories
         public Task<List<Authorization>> GetAuthorizationsByApplicationAsync(Guid applicationId, CancellationToken cancellationToken)
         {
             return DbContext.Authorizations.Where(a => a.ApplicationId == applicationId).ToListAsync(cancellationToken);
+        }
+
+        public Task<List<Authorization>> GetAuthorizationsByUserAsync(Guid userId, CancellationToken cancellationToken)
+        {
+            var list = DbContext.Authorizations
+                .Join(DbContext.Applications, a => a.ApplicationId, app => app.Id,
+                    (a, app) => new {Authorization = a, App = app});
+
+            foreach (var x in list)
+            {
+                x.Authorization.Application = x.App;
+            }
+
+            return list.Select(x => x.Authorization).ToListAsync(cancellationToken);
         }
     }
 }

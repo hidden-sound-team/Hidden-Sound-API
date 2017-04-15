@@ -12,6 +12,8 @@ namespace HiddenSound.API.Areas.API.Models.Responses
 
         public DateTime ExpiresOn { get; set; }
 
+        public DateTime CreatedOn { get; set; }
+
         public AuthorizationStatus Status { get; set; }
     }
 }
