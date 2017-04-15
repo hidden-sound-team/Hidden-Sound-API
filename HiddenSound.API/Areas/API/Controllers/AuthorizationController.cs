@@ -63,7 +63,7 @@ namespace HiddenSound.API.Areas.API.Controllers
             var qrContents = new QRCodeContents()
             {
                 authorizationCode = authorizationCode,
-                applicationName = application.DisplayName
+                applicationName = "Board Shop"
             };
 
             var json = JsonConvert.SerializeObject(qrContents);
