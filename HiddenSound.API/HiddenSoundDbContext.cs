@@ -29,6 +29,8 @@ namespace HiddenSound.API
 
         public virtual DbSet<HSOpenIddictApplication> Applications { get; set; }
 
+        public virtual DbSet<AuthorizedApplication> AuthorizedApplications { get; set; }
+
         private static readonly string[] SeedRoles = { "Administrator", "Basic" };
 
         public HiddenSoundDbContext(DbContextOptions<HiddenSoundDbContext> options) : base(options)
@@ -124,6 +126,12 @@ namespace HiddenSound.API
             builder.Entity<Device>(entity =>
             {
                 entity.ToTable("Device");
+                entity.Property(e => e.Id).HasDefaultValueSql("newsequentialid()");
+            });
+
+            builder.Entity<AuthorizedApplication>(entity =>
+            {
+                entity.ToTable("AuthorizedApplication");
                 entity.Property(e => e.Id).HasDefaultValueSql("newsequentialid()");
             });
         }

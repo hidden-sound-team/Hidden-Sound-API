@@ -24,6 +24,7 @@ using OpenIddict.Models;
 using SignInResult = Microsoft.AspNetCore.Mvc.SignInResult;
 using HiddenSound.API.OpenIddict;
 using System.Net;
+using HiddenSound.API.Areas.Shared.Repositories;
 
 namespace HiddenSound.API.Areas.OAuth.Controllers
 {
@@ -38,6 +39,8 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
         public UserManager<HiddenSoundUser> UserManager { get; set; }
 
         public IOptions<AppSettingsConfig> AppSettings { get; set; }
+
+        public IAuthorizedApplicationRepository AuthorizedApplicationRepository { get; set; }
 
         [HttpGet(OAuthConstants.AuthorizeRoute)]
         public async Task<IActionResult> Authorize([FromQuery] OpenIdConnectRequest request)
@@ -84,6 +87,8 @@ namespace HiddenSound.API.Areas.OAuth.Controllers
                     ErrorDescription = "An internal error has occurred"
                 });
             }
+
+            
 
             var principal = await SignInManager.CreateUserPrincipalAsync(user);
             principal.AddClaim("api", "true", ClaimValueTypes.Boolean);

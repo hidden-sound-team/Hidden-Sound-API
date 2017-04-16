@@ -20,6 +20,7 @@ namespace HiddenSound.API
             builder.RegisterType<AuthorizationRepository>().As<IAuthorizationRepository>().PropertiesAutowired();
             builder.RegisterType<DeviceRepository>().As<IDeviceRepository>().PropertiesAutowired();
             builder.RegisterType<ApplicationRepository>().As<IApplicationRepository>().PropertiesAutowired();
+            builder.RegisterType<AuthorizedApplicationRepository>().As<IAuthorizedApplicationRepository>().PropertiesAutowired();
 
             builder.RegisterType<QRService>().As<IQRService>().PropertiesAutowired();
             builder.RegisterType<AuthEmailSender>().As<IEmailSender>().PropertiesAutowired();
