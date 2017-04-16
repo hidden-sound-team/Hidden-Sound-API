@@ -39,7 +39,9 @@ namespace HiddenSound.API.Areas.Application.Controllers
                 Username = user.UserName,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Email = user.Email
+                Email = user.Email,
+                Language = user.Language,
+                Timezone = user.Timezone
             };
 
             return Ok(response);
@@ -55,6 +57,8 @@ namespace HiddenSound.API.Areas.Application.Controllers
                 var user = await UserManager.GetUserAsync(User);
                 user.FirstName = request.FirstName;
                 user.LastName = request.LastName;
+                user.Language = request.Language;
+                user.Timezone = request.Timezone;
 
                 var result = await UserManager.UpdateAsync(user);
 
@@ -69,7 +73,9 @@ namespace HiddenSound.API.Areas.Application.Controllers
                     Email = user.Email,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    Username = user.UserName
+                    Username = user.UserName,
+                    Language = user.Language,
+                    Timezone = user.Timezone
                 };
                 return Ok(response);
             }

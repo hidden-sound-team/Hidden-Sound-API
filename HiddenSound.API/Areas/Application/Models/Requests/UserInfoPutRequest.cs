@@ -10,5 +10,9 @@ namespace HiddenSound.API.Areas.Application.Models.Requests
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
+
+        public string Language { get; set; } = "EN";
+
+        public string Timezone { get; set; } = "-05:00";
     }
 }

@@ -4,13 +4,13 @@ namespace HiddenSound.API.Areas.Application.Models.Requests
 {
     public class RegisterRequest
     {
-        [Required]
-        [MinLength(2)]
         public string FirstName { get; set; }
 
-        [Required]
-        [MinLength(2)]
         public string LastName { get; set; }
+
+        public string Language { get; set; } = "EN";
+
+        public string Timezone { get; set; } = "-05:00";
 
         [Required]
         [EmailAddress]
