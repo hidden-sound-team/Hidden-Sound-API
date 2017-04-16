@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using OpenIddict.Core;
 using HiddenSound.API.Areas.Application.Models.Requests;
+using Microsoft.EntityFrameworkCore;
 
 namespace HiddenSound.API.Areas.Application.Controllers
 {
@@ -23,6 +24,8 @@ namespace HiddenSound.API.Areas.Application.Controllers
         public IAuthorizedApplicationRepository AuthorizedApplicationRepository { get; set; }
 
         public OpenIddictApplicationManager<HSOpenIddictApplication> ApplicationManager { get; set; }
+
+        public HiddenSoundDbContext HiddenSoundDbContext { get; set; }
 
         [HttpGet("[action]")]
         [Authorize("Application")]
@@ -45,13 +48,39 @@ namespace HiddenSound.API.Areas.Application.Controllers
             return Ok(response);
         }
 
+        [HttpGet("{clientId}")]
+        [Authorize("Application")]
+        [ProducesResponseType(typeof(AuthorizedApplication), 200)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> Get([FromRoute] string clientId)
+        {
+            var user = await UserManager.GetUserAsync(User);
+
+            var authorizedApplications = await AuthorizedApplicationRepository.GetAuthorizedApplicationsByUserIdAsync(user.Id, HttpContext.RequestAborted);
+
+            var authorizedApplication = authorizedApplications.FirstOrDefault(a => a.Application.DisplayName == clientId);
+
+            if (authorizedApplication == null)
+            {
+                return NotFound();
+            }
+
+            var response = new AuthorizedApplication()
+            {
+                Id = authorizedApplication.Id,
+                Name = authorizedApplication.Application.DisplayName
+            };
+
+            return Ok(response);
+        }
+
         [HttpPost("[action]")]
         [Authorize("Application")]
         public async Task<IActionResult> Add([FromForm] AuthorizedApplicationAddRequest request)
         {
             var user = await UserManager.GetUserAsync(User);
 
-            var application = await ApplicationManager.FindByClientIdAsync(request.ClientId, HttpContext.RequestAborted);
+            var application = await HiddenSoundDbContext.Applications.FirstOrDefaultAsync(a => a.DisplayName == request.ClientId);
 
             if (application == null)
             {
