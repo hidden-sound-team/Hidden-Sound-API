@@ -21,5 +21,7 @@ namespace HiddenSound.API.Areas.Shared.Repositories
         Task<Device> GetDeviceAsync(string imei, CancellationToken cancellationToken);
 
         Task RemoveDeviceAsync(Device device, CancellationToken cancellationToken);
+
+        Task UpdateDeviceAsync(Device device, CancellationToken cancellationToken);
     }
 }

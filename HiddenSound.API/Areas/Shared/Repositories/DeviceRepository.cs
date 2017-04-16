@@ -45,5 +45,11 @@ namespace HiddenSound.API.Areas.Shared.Repositories
         {
             return HiddenSoundDbContext.Devices.FirstOrDefaultAsync(d => d.UserId == userId && deviceGuid == d.Id, cancellationToken);
         }
+
+        public Task UpdateDeviceAsync(Device device, CancellationToken cancellationToken)
+        {
+            HiddenSoundDbContext.Devices.Update(device);
+            return HiddenSoundDbContext.SaveChangesAsync(cancellationToken);
+        }
     }
 }

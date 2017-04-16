@@ -9,9 +9,10 @@ using HiddenSound.API.Areas.Shared.Models;
 namespace HiddenSound.API.Migrations
 {
     [DbContext(typeof(HiddenSoundDbContext))]
-    partial class HiddenSoundDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170416212208_app_desc_url")]
+    partial class app_desc_url
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.1")

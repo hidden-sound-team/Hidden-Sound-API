@@ -13,5 +13,9 @@ namespace HiddenSound.API.Areas.Application.Models.Requests
 
         [Required]
         public string RedirectUri { get; set; }
+
+        public string Description { get; set; }
+
+        public string WebsiteUri { get; set; }
     }
 }

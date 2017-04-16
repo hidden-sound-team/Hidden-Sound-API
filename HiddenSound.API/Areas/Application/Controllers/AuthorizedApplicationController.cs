@@ -41,7 +41,9 @@ namespace HiddenSound.API.Areas.Application.Controllers
                 AuthorizedApplications = authorizedApplications.Select(a => new AuthorizedApplication
                 {
                     Id = a.Application.Id,
-                    Name = a.Application.DisplayName
+                    Name = a.Application.DisplayName,
+                    WebsiteUri = a.Application.WebsiteUri,
+                    Description = a.Application.Description
                 }).ToList()
             };
 
@@ -68,7 +70,9 @@ namespace HiddenSound.API.Areas.Application.Controllers
             var response = new AuthorizedApplication()
             {
                 Id = authorizedApplication.Id,
-                Name = authorizedApplication.Application.DisplayName
+                Name = authorizedApplication.Application.DisplayName,
+                WebsiteUri = authorizedApplication.Application.WebsiteUri,
+                Description = authorizedApplication.Application.Description
             };
 
             return Ok(response);

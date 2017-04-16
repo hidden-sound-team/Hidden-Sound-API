@@ -6,16 +6,10 @@ using System.Threading.Tasks;
 
 namespace HiddenSound.API.Areas.Application.Models.Requests
 {
-    public class ApplicationCreateRequest
+    public class DevicePutRequest
     {
         [Required]
+        [MinLength(2)]
         public string Name { get; set; }
-
-        [Required]
-        public string RedirectUri { get; set; }
-
-        public string Description { get; set; }
-
-        public string WebsiteUri { get; set; }
     }
 }

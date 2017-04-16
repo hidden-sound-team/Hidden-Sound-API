@@ -15,5 +15,9 @@ namespace HiddenSound.API.Areas.Application.Models.Responses
         public Guid Id { get; set; }
 
         public string Name { get; set; }
+
+        public string WebsiteUri { get; set; }
+
+        public string Description { get; set; }
     }
 }

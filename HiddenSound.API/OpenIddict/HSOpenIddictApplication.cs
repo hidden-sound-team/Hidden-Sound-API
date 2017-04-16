@@ -13,6 +13,10 @@ namespace HiddenSound.API.OpenIddict
         [ForeignKey("User")]
         public Guid? UserId { get; set; }
 
+        public string Description { get; set; }
+
+        public string WebsiteUri { get; set; }
+
         public HiddenSoundUser User { get; set; }
     }
 }

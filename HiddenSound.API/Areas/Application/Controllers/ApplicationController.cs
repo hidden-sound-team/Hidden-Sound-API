@@ -43,7 +43,9 @@ namespace HiddenSound.API.Areas.Application.Controllers
                 {
                     Name = app.DisplayName,
                     ClientId = app.ClientId,
-                    RedirectUri = app.RedirectUri
+                    RedirectUri = app.RedirectUri,
+                    Description = app.Description,
+                    WebsiteUri = app.WebsiteUri
                 }).ToList()
             };
 
@@ -65,7 +67,9 @@ namespace HiddenSound.API.Areas.Application.Controllers
                     DisplayName = request.Name,
                     RedirectUri = request.RedirectUri,
                     ClientId = RandomPassword.Generate(25, true, true, true, false),
-                    UserId = user.Id
+                    UserId = user.Id,
+                    Description = request.Description,
+                    WebsiteUri = request.WebsiteUri
                 };
 
                 var clientSecret = RandomPassword.Generate(50, true, true, true, false);
@@ -77,7 +81,9 @@ namespace HiddenSound.API.Areas.Application.Controllers
                     ClientId = application.ClientId,
                     ClientSecret = clientSecret,
                     RedirectUri = application.RedirectUri,
-                    Name = application.DisplayName
+                    Name = application.DisplayName,
+                    Description = application.Description,
+                    WebsiteUri = application.WebsiteUri
                 };
 
                 return Ok(response);
@@ -106,6 +112,8 @@ namespace HiddenSound.API.Areas.Application.Controllers
 
                 application.DisplayName = request.Name;
                 application.RedirectUri = request.RedirectUri;
+                application.Description = request.Description;
+                application.WebsiteUri = request.WebsiteUri;
 
                 await ApplicationManager.UpdateAsync(application, HttpContext.RequestAborted);
 
@@ -113,7 +121,9 @@ namespace HiddenSound.API.Areas.Application.Controllers
                 {
                     ClientId = application.ClientId,
                     RedirectUri = application.RedirectUri,
-                    Name = application.DisplayName
+                    Name = application.DisplayName,
+                    Description = application.Description,
+                    WebsiteUri = application.WebsiteUri
                 };
 
                 return Ok(response);
