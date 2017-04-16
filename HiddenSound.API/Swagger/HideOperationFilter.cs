@@ -15,7 +15,7 @@ namespace HiddenSound.API.Swagger
 
             foreach(var path in swaggerDoc.Paths)
             {
-                var methods = new[] { path.Value.Get, path.Value.Post };
+                var methods = new[] { path.Value.Get, path.Value.Post, path.Value.Delete, path.Value.Put };
 
                 foreach(var method in methods)
                 {
